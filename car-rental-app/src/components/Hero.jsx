@@ -56,7 +56,7 @@ function Hero() {
 
             {/* Until Date */}
             <div className="flex-1 p-4">
-              <label className="block text-xs text-gray-600 mb-1">{t('search.date_to')} 1</label>
+              <label className="block text-xs text-gray-600 mb-1">{t('search.date_to')}</label>
               <div className="flex gap-2">
                 <input
                   type="date"
