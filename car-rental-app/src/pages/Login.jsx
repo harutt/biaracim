@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { signInWithGoogle } from '../firebase'
 
 function Login() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -14,7 +15,18 @@ function Login() {
       setLoading(true)
       setError('')
       await signInWithGoogle()
-      navigate('/')
+
+      // Check if there's a redirect URL
+      const redirect = searchParams.get('redirect')
+      if (redirect) {
+        // Check if there's saved form data in sessionStorage
+        const savedFormData = sessionStorage.getItem('listCarFormData')
+        const savedStep = sessionStorage.getItem('listCarCurrentStep')
+
+        navigate(redirect)
+      } else {
+        navigate('/')
+      }
     } catch (error) {
       setError('Google ile giriş yapılamadı. Lütfen tekrar deneyin.')
       console.error(error)

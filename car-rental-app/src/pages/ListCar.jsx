@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 const steps = [
   { id: 1, title: 'Aracınız', name: 'car' },
@@ -15,22 +16,75 @@ const steps = [
   { id: 11, title: 'Listelemeyi gönder', name: 'submit' },
 ]
 
+const initialFormData = {
+  vin: '',
+  make: '',
+  model: '',
+  year: '',
+  phone: '',
+  goals: '',
+  minRentalDays: '1',
+  maxRentalDays: '30',
+  availableDays: [],
+  mileage: '',
+  licensePlate: '',
+  fuelType: 'Benzin',
+  transmission: 'Otomatik',
+  seats: '5',
+  features: [],
+  dailyPrice: '',
+  description: '',
+  photos: [],
+  profilePhoto: null,
+  licensePhoto: null,
+  bankName: '',
+  iban: '',
+  accountHolderName: '',
+  termsAccepted: false,
+  insuranceConfirmed: false,
+  responsibilitiesAccepted: false,
+}
+
 function ListCar() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
   const [showSteps, setShowSteps] = useState(false)
-  const [formData, setFormData] = useState({
-    vin: '',
-    make: '',
-    model: '',
-    year: '',
-    phone: '',
-    goals: '',
-    // ... other fields
-  })
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [formData, setFormData] = useState(initialFormData)
+
+  // Sayfa yüklendiğinde sessionStorage'dan verileri yükle
+  useEffect(() => {
+    const savedFormData = sessionStorage.getItem('listCarFormData')
+    const savedStep = sessionStorage.getItem('listCarCurrentStep')
+
+    if (savedFormData) {
+      try {
+        const parsedData = JSON.parse(savedFormData)
+        setFormData(parsedData)
+        // Verileri yükledikten sonra sessionStorage'ı temizle
+        sessionStorage.removeItem('listCarFormData')
+      } catch (error) {
+        console.error('Error loading saved form data:', error)
+      }
+    }
+
+    if (savedStep) {
+      setCurrentStep(parseInt(savedStep))
+      sessionStorage.removeItem('listCarCurrentStep')
+    }
+  }, [])
 
   const handleNext = () => {
-    if (currentStep < steps.length) {
+    // Son adımda (11. adım - submit), kullanıcı girişi kontrolü yap
+    if (currentStep === steps.length) {
+      if (!user) {
+        setShowAuthModal(true)
+        return
+      }
+      // Kullanıcı giriş yaptıysa formu kaydet
+      handleSubmit()
+    } else {
       setCurrentStep(currentStep + 1)
     }
   }
@@ -38,6 +92,26 @@ function ListCar() {
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const handleSubmit = () => {
+    // Form verilerini kaydetme işlemi
+    console.log('Form data to be saved:', formData)
+    // TODO: Firebase'e kaydetme işlemi eklenecek
+    alert('Araç listeleme başvurunuz alındı! En kısa sürede onaylayacağız.')
+  }
+
+  const handleAuthRedirect = (type) => {
+    // Form verilerini sessionStorage'a kaydet
+    sessionStorage.setItem('listCarFormData', JSON.stringify(formData))
+    sessionStorage.setItem('listCarCurrentStep', currentStep.toString())
+
+    // Login veya Signup sayfasına yönlendir
+    if (type === 'login') {
+      navigate('/login?redirect=/list-car')
+    } else {
+      navigate('/signup?redirect=/list-car')
     }
   }
 
@@ -174,6 +248,8 @@ function ListCar() {
                   type="radio"
                   name="goal"
                   value="extra"
+                  checked={formData.goals === 'extra'}
+                  onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
                   className="h-4 w-4 text-purple-600"
                 />
                 <span className="ml-3 text-gray-700">Ekstra gelir elde etmek</span>
@@ -183,6 +259,8 @@ function ListCar() {
                   type="radio"
                   name="goal"
                   value="cover"
+                  checked={formData.goals === 'cover'}
+                  onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
                   className="h-4 w-4 text-purple-600"
                 />
                 <span className="ml-3 text-gray-700">Araç masraflarımı karşılamak</span>
@@ -192,6 +270,8 @@ function ListCar() {
                   type="radio"
                   name="goal"
                   value="business"
+                  checked={formData.goals === 'business'}
+                  onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
                   className="h-4 w-4 text-purple-600"
                 />
                 <span className="ml-3 text-gray-700">Bir iş kurmak</span>
@@ -215,7 +295,11 @@ function ListCar() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Minimum kiralama süresi
                 </label>
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select
+                  value={formData.minRentalDays}
+                  onChange={(e) => setFormData({ ...formData, minRentalDays: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
                   <option value="1">1 gün</option>
                   <option value="2">2 gün</option>
                   <option value="3">3 gün</option>
@@ -227,7 +311,11 @@ function ListCar() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Maksimum kiralama süresi
                 </label>
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select
+                  value={formData.maxRentalDays}
+                  onChange={(e) => setFormData({ ...formData, maxRentalDays: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
                   <option value="7">1 hafta</option>
                   <option value="14">2 hafta</option>
                   <option value="30">1 ay</option>
@@ -243,7 +331,17 @@ function ListCar() {
                 <div className="grid grid-cols-2 gap-3">
                   {['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'].map((day) => (
                     <label key={day} className="flex items-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                      <input type="checkbox" className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" />
+                      <input
+                        type="checkbox"
+                        checked={formData.availableDays.includes(day)}
+                        onChange={(e) => {
+                          const newDays = e.target.checked
+                            ? [...formData.availableDays, day]
+                            : formData.availableDays.filter(d => d !== day)
+                          setFormData({ ...formData, availableDays: newDays })
+                        }}
+                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                      />
                       <span className="ml-2 text-sm text-gray-700">{day}</span>
                     </label>
                   ))}
@@ -279,6 +377,8 @@ function ListCar() {
                   <input
                     type="number"
                     placeholder="Örn: 50000"
+                    value={formData.mileage}
+                    onChange={(e) => setFormData({ ...formData, mileage: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -289,6 +389,8 @@ function ListCar() {
                   <input
                     type="text"
                     placeholder="34 ABC 123"
+                    value={formData.licensePlate}
+                    onChange={(e) => setFormData({ ...formData, licensePlate: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                 </div>
@@ -299,7 +401,11 @@ function ListCar() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Yakıt türü
                   </label>
-                  <select className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                  <select
+                    value={formData.fuelType}
+                    onChange={(e) => setFormData({ ...formData, fuelType: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
                     <option>Benzin</option>
                     <option>Dizel</option>
                     <option>Elektrik</option>
@@ -310,7 +416,11 @@ function ListCar() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Vites türü
                   </label>
-                  <select className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                  <select
+                    value={formData.transmission}
+                    onChange={(e) => setFormData({ ...formData, transmission: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
                     <option>Otomatik</option>
                     <option>Manuel</option>
                   </select>
@@ -321,7 +431,11 @@ function ListCar() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Koltuk sayısı
                 </label>
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select
+                  value={formData.seats}
+                  onChange={(e) => setFormData({ ...formData, seats: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
                   <option>2</option>
                   <option>4</option>
                   <option>5</option>
@@ -337,7 +451,17 @@ function ListCar() {
                 <div className="grid grid-cols-2 gap-3">
                   {['Klima', 'Bluetooth', 'GPS', 'Arka Kamera', 'Park Sensörü', 'Sunroof'].map((feature) => (
                     <label key={feature} className="flex items-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
-                      <input type="checkbox" className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" />
+                      <input
+                        type="checkbox"
+                        checked={formData.features.includes(feature)}
+                        onChange={(e) => {
+                          const newFeatures = e.target.checked
+                            ? [...formData.features, feature]
+                            : formData.features.filter(f => f !== feature)
+                          setFormData({ ...formData, features: newFeatures })
+                        }}
+                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                      />
                       <span className="ml-2 text-sm text-gray-700">{feature}</span>
                     </label>
                   ))}
@@ -351,6 +475,8 @@ function ListCar() {
                 <input
                   type="number"
                   placeholder="Örn: 450"
+                  value={formData.dailyPrice}
+                  onChange={(e) => setFormData({ ...formData, dailyPrice: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
                 <p className="mt-2 text-sm text-gray-500">Ortalama günlük fiyat: ₺400-600</p>
@@ -363,6 +489,8 @@ function ListCar() {
                 <textarea
                   rows={4}
                   placeholder="Aracınız hakkında kiracıların bilmesini istediğiniz detayları yazın..."
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -430,7 +558,11 @@ function ListCar() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Banka seçin
                 </label>
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <select
+                  value={formData.bankName}
+                  onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
                   <option>Banka seçin...</option>
                   <option>Ziraat Bankası</option>
                   <option>İş Bankası</option>
@@ -451,6 +583,8 @@ function ListCar() {
                   type="text"
                   placeholder="TR00 0000 0000 0000 0000 0000 00"
                   maxLength={32}
+                  value={formData.iban}
+                  onChange={(e) => setFormData({ ...formData, iban: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -462,6 +596,8 @@ function ListCar() {
                 <input
                   type="text"
                   placeholder="Ad Soyad"
+                  value={formData.accountHolderName}
+                  onChange={(e) => setFormData({ ...formData, accountHolderName: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
@@ -566,6 +702,8 @@ function ListCar() {
                 <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-500 transition-colors">
                   <input
                     type="checkbox"
+                    checked={formData.termsAccepted}
+                    onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
                     className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mt-0.5"
                   />
                   <span className="ml-3 text-sm text-gray-700">
@@ -576,6 +714,8 @@ function ListCar() {
                 <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-500 transition-colors">
                   <input
                     type="checkbox"
+                    checked={formData.insuranceConfirmed}
+                    onChange={(e) => setFormData({ ...formData, insuranceConfirmed: e.target.checked })}
                     className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mt-0.5"
                   />
                   <span className="ml-3 text-sm text-gray-700">
@@ -586,6 +726,8 @@ function ListCar() {
                 <label className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-purple-500 transition-colors">
                   <input
                     type="checkbox"
+                    checked={formData.responsibilitiesAccepted}
+                    onChange={(e) => setFormData({ ...formData, responsibilitiesAccepted: e.target.checked })}
                     className="h-5 w-5 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mt-0.5"
                   />
                   <span className="ml-3 text-sm text-gray-700">
@@ -715,6 +857,50 @@ function ListCar() {
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Auth Modal */}
+        {showAuthModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-8">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold mb-2">Giriş Yapın</h3>
+                <p className="text-gray-600">
+                  Araç listeleme işlemini tamamlamak için önce giriş yapmanız veya kayıt olmanız gerekiyor
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleAuthRedirect('login')}
+                  className="w-full px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors font-medium"
+                >
+                  Giriş Yap
+                </button>
+                <button
+                  onClick={() => handleAuthRedirect('signup')}
+                  className="w-full px-6 py-3 bg-white text-purple-600 border-2 border-purple-600 rounded-md hover:bg-purple-50 transition-colors font-medium"
+                >
+                  Kayıt Ol
+                </button>
+                <button
+                  onClick={() => setShowAuthModal(false)}
+                  className="w-full px-6 py-3 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  İptal
+                </button>
+              </div>
+
+              <p className="text-xs text-gray-500 text-center mt-6">
+                Form bilgileriniz güvenli bir şekilde saklanacak ve giriş yaptıktan sonra kaldığınız yerden devam edebileceksiniz.
+              </p>
             </div>
           </div>
         )}
