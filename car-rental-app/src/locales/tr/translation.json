@@ -1,0 +1,28 @@
+{
+  "app_name": "Araç Kiralama",
+  "welcome": "Hoş Geldiniz",
+  "description": "Bireysel araç sahiplerinden, neredeyse her yerde istediğiniz arabayı kiralayın. Kiralama şirketlerinden değil.",
+  "nav": {
+    "home": "Ana Sayfa",
+    "search": "Araç Ara",
+    "how_it_works": "Nasıl Çalışır",
+    "about": "Hakkımızda",
+    "login": "Giriş Yap",
+    "signup": "Kayıt Ol"
+  },
+  "search": {
+    "placeholder": "Nerede araç aramak istiyorsunuz?",
+    "button": "Ara",
+    "date_from": "Başlangıç Tarihi",
+    "date_to": "Bitiş Tarihi"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Bir hata oluştu",
+    "success": "Başarılı",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "next": "İleri",
+    "back": "Geri"
+  }
+}

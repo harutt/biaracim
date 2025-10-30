@@ -1,0 +1,28 @@
+{
+  "app_name": "Car Rental",
+  "welcome": "Welcome",
+  "description": "Skip the rental car process and rent just about any car, just about anywhere from individual car owners. Not from rental companies.",
+  "nav": {
+    "home": "Home",
+    "search": "Search Cars",
+    "how_it_works": "How It Works",
+    "about": "About",
+    "login": "Login",
+    "signup": "Sign Up"
+  },
+  "search": {
+    "placeholder": "Where do you want to search for cars?",
+    "button": "Search",
+    "date_from": "Start Date",
+    "date_to": "End Date"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "next": "Next",
+    "back": "Back"
+  }
+}
