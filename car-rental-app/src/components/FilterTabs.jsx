@@ -1,8 +1,4 @@
-import { useState } from 'react'
-
-function FilterTabs() {
-  const [activeFilter, setActiveFilter] = useState('all')
-
+function FilterTabs({ activeFilter, onFilterChange }) {
   const filters = [
     { id: 'all', label: 'Tümü', icon: '🚗' },
     { id: 'airports', label: 'Havaalanları', icon: '✈️' },
@@ -18,7 +14,7 @@ function FilterTabs() {
           {filters.map((filter) => (
             <button
               key={filter.id}
-              onClick={() => setActiveFilter(filter.id)}
+              onClick={() => onFilterChange(filter.id)}
               className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
                 activeFilter === filter.id
                   ? 'bg-black text-white'

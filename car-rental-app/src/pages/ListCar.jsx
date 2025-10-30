@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { createCarListing, uploadMultipleFiles, uploadFile } from '../firebase'
 
 const steps = [
   { id: 1, title: 'Aracınız', name: 'car' },
@@ -51,6 +52,7 @@ function ListCar() {
   const [currentStep, setCurrentStep] = useState(1)
   const [showSteps, setShowSteps] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState(initialFormData)
 
   // Sayfa yüklendiğinde sessionStorage'dan verileri yükle
@@ -95,11 +97,102 @@ function ListCar() {
     }
   }
 
-  const handleSubmit = () => {
-    // Form verilerini kaydetme işlemi
-    console.log('Form data to be saved:', formData)
-    // TODO: Firebase'e kaydetme işlemi eklenecek
-    alert('Araç listeleme başvurunuz alındı! En kısa sürede onaylayacağız.')
+  const handleSubmit = async () => {
+    try {
+      setLoading(true)
+
+      // 1. Fotoğrafları yükle
+      let carPhotoURLs = []
+      let profilePhotoURL = null
+      let licensePhotoURL = null
+
+      if (formData.photos && formData.photos.length > 0) {
+        carPhotoURLs = await uploadMultipleFiles(
+          formData.photos,
+          `carPhotos/${user.uid}`
+        )
+      }
+
+      if (formData.profilePhoto) {
+        profilePhotoURL = await uploadFile(
+          formData.profilePhoto,
+          `profilePhotos/${user.uid}/${Date.now()}_${formData.profilePhoto.name}`
+        )
+      }
+
+      if (formData.licensePhoto) {
+        licensePhotoURL = await uploadFile(
+          formData.licensePhoto,
+          `licensePhotos/${user.uid}/${Date.now()}_${formData.licensePhoto.name}`
+        )
+      }
+
+      // 2. Form verilerini hazırla
+      const listingData = {
+        // Araç bilgileri
+        vin: formData.vin,
+        make: formData.make,
+        model: formData.model,
+        year: formData.year,
+        mileage: formData.mileage,
+        licensePlate: formData.licensePlate,
+        fuelType: formData.fuelType,
+        transmission: formData.transmission,
+        seats: formData.seats,
+        features: formData.features,
+        dailyPrice: parseFloat(formData.dailyPrice),
+        description: formData.description,
+
+        // Müsaitlik bilgileri
+        minRentalDays: parseInt(formData.minRentalDays),
+        maxRentalDays: formData.maxRentalDays === 'unlimited' ? 'unlimited' : parseInt(formData.maxRentalDays),
+        availableDays: formData.availableDays,
+
+        // Kullanıcı bilgileri
+        phone: formData.phone,
+        goals: formData.goals,
+
+        // Ödeme bilgileri
+        bankName: formData.bankName,
+        iban: formData.iban,
+        accountHolderName: formData.accountHolderName,
+
+        // Fotoğraflar
+        photos: carPhotoURLs,
+        profilePhoto: profilePhotoURL,
+        licensePhoto: licensePhotoURL,
+
+        // Onaylar
+        termsAccepted: formData.termsAccepted,
+        insuranceConfirmed: formData.insuranceConfirmed,
+        responsibilitiesAccepted: formData.responsibilitiesAccepted,
+
+        // Kullanıcı bilgileri
+        userEmail: user.email,
+        userName: user.displayName || user.email.split('@')[0]
+      }
+
+      // 3. Firebase'e kaydet
+      const listingId = await createCarListing(listingData, user.uid)
+
+      console.log('Araç ilanı başarıyla oluşturuldu:', listingId)
+
+      // 4. Başarı mesajı göster ve yönlendir
+      alert('🎉 Araç listeleme başvurunuz alındı!\n\nBaşvurunuz inceleniyor. Onaylandığında e-posta ile bilgilendirileceksiniz.')
+
+      // Form verilerini temizle
+      setFormData(initialFormData)
+      setCurrentStep(1)
+
+      // Ana sayfaya veya dashboard'a yönlendir
+      navigate('/')
+
+    } catch (error) {
+      console.error('Error submitting car listing:', error)
+      alert('Bir hata oluştu: ' + error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleAuthRedirect = (type) => {
@@ -920,9 +1013,16 @@ function ListCar() {
             </button>
             <button
               onClick={handleNext}
-              className="px-8 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors font-medium"
+              disabled={loading}
+              className="px-8 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {currentStep === steps.length ? 'Gönder' : 'İleri'}
+              {loading && (
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              )}
+              {loading ? 'Kaydediliyor...' : (currentStep === steps.length ? 'Gönder' : 'İleri')}
             </button>
           </div>
         </div>

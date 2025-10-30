@@ -6,7 +6,9 @@
       "Bash(npm run dev:*)",
       "Bash(npm uninstall:*)",
       "Bash(npm run build:*)",
-      "WebFetch(domain:turo.com)"
+      "WebFetch(domain:turo.com)",
+      "Bash(timeout 5 npm run dev)",
+      "Bash(npx eslint:*)"
     ],
     "deny": [],
     "ask": []

@@ -14,6 +14,7 @@ import Insurance from './pages/Insurance'
 import HostTools from './pages/HostTools'
 import Calculator from './pages/Calculator'
 import ListCar from './pages/ListCar'
+import AirportDetail from './pages/AirportDetail'
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/host-tools" element={<HostTools />} />
               <Route path="/calculator" element={<Calculator />} />
               <Route path="/list-car" element={<ListCar />} />
+              <Route path="/airport/:airportId" element={<AirportDetail />} />
             </Routes>
           </main>
           <Footer />
