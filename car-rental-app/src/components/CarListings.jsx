@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next'
 import CarCard from './CarCard'
 
 function CarListings() {
+  const { t } = useTranslation()
   // Sample car data
   const sampleCars = [
     { id: 1, name: 'Toyota Corolla 2021', image: 'https://images.unsplash.com/photo-1623869675781-80aa31012a5a?w=400&h=300&fit=crop', price: '₺450', rating: 4.9 },
@@ -16,7 +18,7 @@ function CarListings() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">İstanbul'da uygun fiyatlı araç kiralama →</h2>
+        <h2 className="text-2xl font-bold">{t('carListings.title')} →</h2>
         <div className="flex gap-2">
           <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

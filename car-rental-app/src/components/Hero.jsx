@@ -25,10 +25,10 @@ function Hero() {
           <div className="flex flex-col md:flex-row gap-2">
             {/* Where */}
             <div className="flex-1 p-4">
-              <label className="block text-xs text-gray-600 mb-1">Nerede</label>
+              <label className="block text-xs text-gray-600 mb-1">{t('search.where')}</label>
               <input
                 type="text"
-                placeholder="Şehir, havaalanı, adres veya otel"
+                placeholder={t('search.where_placeholder')}
                 className="w-full text-gray-800 placeholder-gray-400 focus:outline-none text-sm"
               />
             </div>

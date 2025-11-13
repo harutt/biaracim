@@ -1,14 +1,16 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 function FilterTabs() {
+  const { t } = useTranslation()
   const [activeFilter, setActiveFilter] = useState('all')
 
   const filters = [
-    { id: 'all', label: 'Tümü', icon: '🚗' },
-    { id: 'airports', label: 'Havaalanları', icon: '✈️' },
-    { id: 'nearby', label: 'Yakınımda', icon: '📍' },
-    { id: 'delivered', label: 'Teslimat', icon: '🚚' },
-    { id: 'cities', label: 'Şehirler', icon: '🏙️' },
+    { id: 'all', icon: '🚗' },
+    { id: 'airports', icon: '✈️' },
+    { id: 'nearby', icon: '📍' },
+    { id: 'delivered', icon: '🚚' },
+    { id: 'cities', icon: '🏙️' },
   ]
 
   return (
@@ -25,7 +27,7 @@ function FilterTabs() {
                   : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
               }`}
             >
-              <span className="mr-2">{filter.icon}</span> {filter.label}
+              <span className="mr-2">{filter.icon}</span> {t(`filters.${filter.id}`)}
             </button>
           ))}
         </div>

@@ -14,7 +14,7 @@ function Footer() {
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
+            <h4 className="font-semibold mb-4">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2 text-gray-400">
               <li><a href="#" className="hover:text-white transition-colors">{t('nav.home')}</a></li>
               <li><a href="#" className="hover:text-white transition-colors">{t('nav.search')}</a></li>
@@ -23,14 +23,14 @@ function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">Contact</h4>
+            <h4 className="font-semibold mb-4">{t('footer.contact')}</h4>
             <p className="text-gray-400">
               Türkiye
             </p>
           </div>
         </div>
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 {t('app_name')}. All rights reserved.</p>
+          <p>&copy; 2024 {t('app_name')}. {t('footer.allRightsReserved')}</p>
         </div>
       </div>
     </footer>

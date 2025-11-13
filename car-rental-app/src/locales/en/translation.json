@@ -1,7 +1,22 @@
 {
-  "app_name": "Car Rental",
+  "app_name": "biaracım",
   "welcome": "Welcome",
   "description": "Skip the rental car process and rent just about any car, just about anywhere from individual car owners. Not from rental companies.",
+  "header": {
+    "why_choose": "Why Choose Us?",
+    "list_car": "List Your Car",
+    "login": "Login",
+    "signup": "Sign Up",
+    "profile": "Profile Settings",
+    "logout": "Logout",
+    "become_host": "Become a Host",
+    "why_us": "Why Us",
+    "contact": "Support",
+    "legal": "Legal",
+    "insurance": "Insurance",
+    "host_tools": "Host Management",
+    "calculator": "Calculator"
+  },
   "nav": {
     "home": "Home",
     "search": "Search Cars",
@@ -11,10 +26,28 @@
     "signup": "Sign Up"
   },
   "search": {
+    "where": "Where",
+    "where_placeholder": "City, airport, address or hotel",
     "placeholder": "Where do you want to search for cars?",
     "button": "Search",
     "date_from": "Start Date",
     "date_to": "End Date"
+  },
+  "filters": {
+    "all": "All",
+    "airports": "Airports",
+    "nearby": "Nearby",
+    "delivered": "Delivery",
+    "cities": "Cities"
+  },
+  "carListings": {
+    "title": "Affordable car rental in Istanbul",
+    "perDay": "/day"
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "contact": "Contact",
+    "allRightsReserved": "All rights reserved."
   },
   "common": {
     "loading": "Loading...",

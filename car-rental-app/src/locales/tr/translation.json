@@ -1,7 +1,22 @@
 {
-  "app_name": "Araç Kiralama",
+  "app_name": "biaracım",
   "welcome": "Hoş Geldiniz",
   "description": "Bireysel araç sahiplerinden, neredeyse her yerde istediğiniz arabayı kiralayın. Kiralama şirketlerinden değil.",
+  "header": {
+    "why_choose": "Neden Biz?",
+    "list_car": "Araç Listele",
+    "login": "Giriş Yap",
+    "signup": "Kayıt Ol",
+    "profile": "Profil Ayarları",
+    "logout": "Çıkış Yap",
+    "become_host": "Aracını Kirala",
+    "why_us": "Neden Biz",
+    "contact": "Destek",
+    "legal": "Yasal",
+    "insurance": "Sigorta",
+    "host_tools": "Kiralama Yönetimi",
+    "calculator": "Hesaplayıcı"
+  },
   "nav": {
     "home": "Ana Sayfa",
     "search": "Araç Ara",
@@ -11,10 +26,28 @@
     "signup": "Kayıt Ol"
   },
   "search": {
+    "where": "Nerede",
+    "where_placeholder": "Şehir, havaalanı, adres veya otel",
     "placeholder": "Nerede araç aramak istiyorsunuz?",
     "button": "Ara",
     "date_from": "Başlangıç Tarihi",
     "date_to": "Bitiş Tarihi"
+  },
+  "filters": {
+    "all": "Tümü",
+    "airports": "Havaalanları",
+    "nearby": "Yakınımda",
+    "delivered": "Teslimat",
+    "cities": "Şehirler"
+  },
+  "carListings": {
+    "title": "İstanbul'da uygun fiyatlı araç kiralama",
+    "perDay": "/gün"
+  },
+  "footer": {
+    "quickLinks": "Hızlı Linkler",
+    "contact": "İletişim",
+    "allRightsReserved": "Tüm hakları saklıdır."
   },
   "common": {
     "loading": "Yükleniyor...",
