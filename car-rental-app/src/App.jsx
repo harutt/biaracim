@@ -15,6 +15,7 @@ import HostTools from './pages/HostTools'
 import Calculator from './pages/Calculator'
 import ListCar from './pages/ListCar'
 import AirportDetail from './pages/AirportDetail'
+import CarDetail from './pages/CarDetail'
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
               <Route path="/calculator" element={<Calculator />} />
               <Route path="/list-car" element={<ListCar />} />
               <Route path="/airport/:airportId" element={<AirportDetail />} />
+              <Route path="/car/:id" element={<CarDetail />} />
             </Routes>
           </main>
           <Footer />

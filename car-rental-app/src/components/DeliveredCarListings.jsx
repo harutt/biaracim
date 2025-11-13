@@ -237,46 +237,44 @@ function DeliveredCarListings() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Delivery Info Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-8 mb-12 border border-purple-100">
-        <div className="flex items-start gap-4">
-          <div className="bg-gradient-to-br from-purple-500 to-blue-500 rounded-full p-4 shadow-lg">
-            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
-              <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
-            </svg>
+      <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 mb-12 shadow-sm">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg">Doğrudan size teslim edilebilecek araçları görün</h3>
+              <p className="text-sm text-gray-600 mt-1">Araç sahibi, seçtiğiniz adreste sizi karşılayacak</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              Doğrudan size teslim edilebilecek araçları görün
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Araç sahibi, seçtiğiniz adreste sizi karşılayacak ve size anahtarları teslim edecek
-            </p>
-            {!showAddressInput ? (
+          {!showAddressInput ? (
+            <button
+              onClick={() => setShowAddressInput(true)}
+              className="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium whitespace-nowrap"
+            >
+              Adres Gir
+            </button>
+          ) : (
+            <div className="flex gap-2 flex-1 max-w-md">
+              <input
+                type="text"
+                placeholder="Teslimat adresinizi girin..."
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              />
               <button
-                onClick={() => setShowAddressInput(true)}
-                className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium shadow-md"
+                onClick={() => console.log('Searching for:', deliveryAddress)}
+                className="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium whitespace-nowrap"
               >
-                Adres girin
+                Ara
               </button>
-            ) : (
-              <div className="flex gap-2 max-w-md">
-                <input
-                  type="text"
-                  placeholder="Teslimat adresinizi girin..."
-                  value={deliveryAddress}
-                  onChange={(e) => setDeliveryAddress(e.target.value)}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-                <button
-                  onClick={() => console.log('Searching for:', deliveryAddress)}
-                  className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium whitespace-nowrap"
-                >
-                  Ara
-                </button>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

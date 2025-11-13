@@ -13,11 +13,14 @@ function Hero({ onSearch }) {
 
   const [showLocationDropdown, setShowLocationDropdown] = useState(false)
   const [showDatePicker, setShowDatePicker] = useState(false)
+  const [showTimePicker, setShowTimePicker] = useState(false)
   const [activeInput, setActiveInput] = useState(null) // 'from' or 'until'
+  const [activeTimeInput, setActiveTimeInput] = useState(null) // 'start' or 'end'
   const [calendarView, setCalendarView] = useState('dates')
 
   const locationRef = useRef(null)
   const datePickerRef = useRef(null)
+  const timePickerRef = useRef(null)
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -27,6 +30,9 @@ function Hero({ onSearch }) {
       }
       if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
         setShowDatePicker(false)
+      }
+      if (timePickerRef.current && !timePickerRef.current.contains(event.target)) {
+        setShowTimePicker(false)
       }
     }
 
@@ -45,28 +51,61 @@ function Hero({ onSearch }) {
     setShowLocationDropdown(false)
   }
 
+  const handleTimeSelect = (time) => {
+    if (activeTimeInput === 'start') {
+      setSearchData(prev => ({ ...prev, startTime: time }))
+    } else {
+      setSearchData(prev => ({ ...prev, endTime: time }))
+    }
+    setShowTimePicker(false)
+  }
+
+  // Generate time options (every 30 minutes)
+  const generateTimeOptions = () => {
+    const times = []
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+        times.push(timeString)
+      }
+    }
+    return times
+  }
+
+  const LocationIcon = ({ type, className = "w-5 h-5" }) => {
+    const icons = {
+      pin: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+      globe: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      plane: <svg className={className} fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>,
+      building: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
+      train: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+      hotel: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
+    }
+    return icons[type] || null
+  }
+
   const locations = {
-    current: { icon: '📍', label: 'Mevcut konum', value: 'current' },
-    anywhere: { icon: '🌍', label: 'Her yerde', subtitle: 'Tüm araçlara göz at', value: '' },
+    current: { iconType: 'pin', label: 'Mevcut konum', value: 'current' },
+    anywhere: { iconType: 'globe', label: 'Her yerde', subtitle: 'Tüm araçlara göz at', value: '' },
     airports: [
-      { icon: '✈️', label: 'İstanbul Havalimanı (IST)', value: 'İstanbul Havalimanı' },
-      { icon: '✈️', label: 'Sabiha Gökçen Havalimanı (SAW)', value: 'Sabiha Gökçen' },
-      { icon: '✈️', label: 'Ankara Esenboğa Havalimanı (ESB)', value: 'Ankara' },
-      { icon: '✈️', label: 'İzmir Adnan Menderes Havalimanı (ADB)', value: 'İzmir' },
+      { iconType: 'plane', label: 'İstanbul Havalimanı (IST)', value: 'İstanbul Havalimanı' },
+      { iconType: 'plane', label: 'Sabiha Gökçen Havalimanı (SAW)', value: 'Sabiha Gökçen' },
+      { iconType: 'plane', label: 'Ankara Esenboğa Havalimanı (ESB)', value: 'Ankara' },
+      { iconType: 'plane', label: 'İzmir Adnan Menderes Havalimanı (ADB)', value: 'İzmir' },
     ],
     cities: [
-      { icon: '🏙️', label: 'İstanbul', value: 'İstanbul' },
-      { icon: '🏙️', label: 'Ankara', value: 'Ankara' },
-      { icon: '🏙️', label: 'İzmir', value: 'İzmir' },
-      { icon: '🏙️', label: 'Antalya', value: 'Antalya' },
+      { iconType: 'building', label: 'İstanbul', value: 'İstanbul' },
+      { iconType: 'building', label: 'Ankara', value: 'Ankara' },
+      { iconType: 'building', label: 'İzmir', value: 'İzmir' },
+      { iconType: 'building', label: 'Antalya', value: 'Antalya' },
     ],
     trainStations: [
-      { icon: '🚂', label: 'Ankara Garı', value: 'Ankara' },
-      { icon: '🚂', label: 'Haydarpaşa Garı, İstanbul', value: 'İstanbul' },
+      { iconType: 'train', label: 'Ankara Garı', value: 'Ankara' },
+      { iconType: 'train', label: 'Haydarpaşa Garı, İstanbul', value: 'İstanbul' },
     ],
     hotels: [
-      { icon: '🏨', label: 'Hilton İstanbul', value: 'İstanbul' },
-      { icon: '🏨', label: 'Sheraton Ankara', value: 'Ankara' },
+      { iconType: 'hotel', label: 'Hilton İstanbul', value: 'İstanbul' },
+      { iconType: 'hotel', label: 'Sheraton Ankara', value: 'Ankara' },
     ],
   }
 
@@ -77,22 +116,22 @@ function Hero({ onSearch }) {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1600&h=600&fit=crop')] bg-cover bg-center"></div>
       </div>
 
-      <div className="relative container mx-auto px-4 py-20 pb-32">
-        <div className="max-w-4xl mx-auto text-center mb-8">
-          <h1 className="text-4xl md:text-6xl mb-4" style={{ fontFamily: "'Playfair Display', serif", fontWeight: '400', letterSpacing: '0.03em', lineHeight: '1.15' }}>
+      <div className="relative container mx-auto px-4 py-10 pb-16">
+        <div className="max-w-4xl mx-auto text-center mb-4">
+          <h1 className="text-2xl md:text-4xl mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: '400', letterSpacing: '0.03em', lineHeight: '1.2' }}>
             Kiralama ofisini atla
           </h1>
-          <p className="text-base md:text-lg opacity-85" style={{ fontFamily: "'Playfair Display', serif", fontWeight: '300', letterSpacing: '0.05em' }}>
+          <p className="text-xs md:text-sm opacity-85" style={{ fontFamily: "'Playfair Display', serif", fontWeight: '300', letterSpacing: '0.05em' }}>
             İstediğin arabayı, istediğin yerden kirala
           </p>
         </div>
 
         {/* Search Box */}
-        <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-2xl p-2 relative overflow-visible">
-          <div className="flex flex-col md:flex-row gap-2 relative overflow-visible">
+        <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-2xl p-0.5 relative overflow-visible">
+          <div className="flex flex-col md:flex-row gap-0.5 relative overflow-visible">
             {/* Where */}
-            <div className="flex-1 p-4 relative" ref={locationRef}>
-              <label className="block text-xs text-gray-600 mb-1">Nerede</label>
+            <div className="flex-1 p-2 relative" ref={locationRef}>
+              <label className="block text-[9px] text-gray-600 mb-0">Nerede</label>
               <input
                 type="text"
                 placeholder="Şehir, havaalanı, adres veya otel"
@@ -111,7 +150,7 @@ function Hero({ onSearch }) {
                       onClick={() => handleLocationSelect('current')}
                       className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
                     >
-                      <span className="text-2xl">{locations.current.icon}</span>
+                      <LocationIcon type={locations.current.iconType} className="w-5 h-5 text-gray-700" />
                       <span className="text-gray-800 font-medium">{locations.current.label}</span>
                     </button>
 
@@ -120,7 +159,7 @@ function Hero({ onSearch }) {
                       onClick={() => handleLocationSelect(locations.anywhere.value)}
                       className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
                     >
-                      <span className="text-2xl">{locations.anywhere.icon}</span>
+                      <LocationIcon type={locations.anywhere.iconType} className="w-5 h-5 text-gray-700" />
                       <div>
                         <div className="text-gray-800 font-medium">{locations.anywhere.label}</div>
                         <div className="text-xs text-gray-500">{locations.anywhere.subtitle}</div>
@@ -137,7 +176,7 @@ function Hero({ onSearch }) {
                         onClick={() => handleLocationSelect(airport.value)}
                         className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
                       >
-                        <span className="text-2xl">{airport.icon}</span>
+                        <LocationIcon type={airport.iconType} className="w-5 h-5 text-gray-700" />
                         <span className="text-gray-800">{airport.label}</span>
                       </button>
                     ))}
@@ -152,7 +191,7 @@ function Hero({ onSearch }) {
                         onClick={() => handleLocationSelect(city.value)}
                         className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
                       >
-                        <span className="text-2xl">{city.icon}</span>
+                        <LocationIcon type={city.iconType} className="w-5 h-5 text-gray-700" />
                         <span className="text-gray-800">{city.label}</span>
                       </button>
                     ))}
@@ -167,7 +206,7 @@ function Hero({ onSearch }) {
                         onClick={() => handleLocationSelect(station.value)}
                         className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
                       >
-                        <span className="text-2xl">{station.icon}</span>
+                        <LocationIcon type={station.iconType} className="w-5 h-5 text-gray-700" />
                         <span className="text-gray-800">{station.label}</span>
                       </button>
                     ))}
@@ -182,7 +221,7 @@ function Hero({ onSearch }) {
                         onClick={() => handleLocationSelect(hotel.value)}
                         className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
                       >
-                        <span className="text-2xl">{hotel.icon}</span>
+                        <LocationIcon type={hotel.iconType} className="w-5 h-5 text-gray-700" />
                         <span className="text-gray-800">{hotel.label}</span>
                       </button>
                     ))}
@@ -195,24 +234,36 @@ function Hero({ onSearch }) {
             <div className="hidden md:block w-px bg-gray-200"></div>
 
             {/* From Date */}
-            <div className="flex-1 p-4">
-              <label className="block text-xs text-gray-600 mb-1">Başlangıç</label>
+            <div className="flex-1 p-2 relative">
+              <label className="block text-[9px] text-gray-600 mb-0">Başlangıç</label>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
                     setActiveInput('from')
                     setShowDatePicker(true)
+                    setShowTimePicker(false)
                   }}
                   className="flex-1 text-left text-gray-800 text-sm hover:bg-gray-50 rounded px-2 py-1"
                 >
                   {searchData.startDate || 'Tarih ekle'}
                 </button>
-                <input
-                  type="time"
-                  value={searchData.startTime}
-                  onChange={(e) => setSearchData(prev => ({ ...prev, startTime: e.target.value }))}
-                  className="flex-1 text-gray-800 focus:outline-none text-sm"
-                />
+                <button
+                  onClick={() => {
+                    if (searchData.startDate) {
+                      setActiveTimeInput('start')
+                      setShowTimePicker(true)
+                      setShowDatePicker(false)
+                    }
+                  }}
+                  disabled={!searchData.startDate}
+                  className={`flex-1 text-left text-sm rounded px-2 py-1 ${
+                    searchData.startDate
+                      ? 'text-gray-800 hover:bg-gray-50 cursor-pointer'
+                      : 'text-gray-400 cursor-not-allowed bg-gray-50'
+                  }`}
+                >
+                  {searchData.startTime}
+                </button>
               </div>
             </div>
 
@@ -220,33 +271,45 @@ function Hero({ onSearch }) {
             <div className="hidden md:block w-px bg-gray-200"></div>
 
             {/* Until Date */}
-            <div className="flex-1 p-4">
-              <label className="block text-xs text-gray-600 mb-1">Bitiş</label>
+            <div className="flex-1 p-2 relative">
+              <label className="block text-[9px] text-gray-600 mb-0">Bitiş</label>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
                     setActiveInput('until')
                     setShowDatePicker(true)
+                    setShowTimePicker(false)
                   }}
                   className="flex-1 text-left text-gray-800 text-sm hover:bg-gray-50 rounded px-2 py-1"
                 >
                   {searchData.endDate || 'Tarih ekle'}
                 </button>
-                <input
-                  type="time"
-                  value={searchData.endTime}
-                  onChange={(e) => setSearchData(prev => ({ ...prev, endTime: e.target.value }))}
-                  className="flex-1 text-gray-800 focus:outline-none text-sm"
-                />
+                <button
+                  onClick={() => {
+                    if (searchData.endDate) {
+                      setActiveTimeInput('end')
+                      setShowTimePicker(true)
+                      setShowDatePicker(false)
+                    }
+                  }}
+                  disabled={!searchData.endDate}
+                  className={`flex-1 text-left text-sm rounded px-2 py-1 ${
+                    searchData.endDate
+                      ? 'text-gray-800 hover:bg-gray-50 cursor-pointer'
+                      : 'text-gray-400 cursor-not-allowed bg-gray-50'
+                  }`}
+                >
+                  {searchData.endTime}
+                </button>
               </div>
             </div>
 
             {/* Search Button */}
             <button
               onClick={handleSearch}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg transition-colors flex items-center justify-center"
+              className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
@@ -298,7 +361,7 @@ function Hero({ onSearch }) {
                               setSearchData(prev => ({ ...prev, endDate: date }))
                             }
                           }}
-                          className="p-2 hover:bg-purple-100 rounded-lg transition-colors text-gray-700 hover:text-purple-700"
+                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-700 hover:text-black"
                         >
                           {day}
                         </button>
@@ -323,7 +386,7 @@ function Hero({ onSearch }) {
                               setSearchData(prev => ({ ...prev, endDate: date }))
                             }
                           }}
-                          className="p-2 hover:bg-purple-100 rounded-lg transition-colors text-gray-700 hover:text-purple-700"
+                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-700 hover:text-black"
                         >
                           {day}
                         </button>
@@ -342,9 +405,47 @@ function Hero({ onSearch }) {
                 </button>
                 <button
                   onClick={() => setShowDatePicker(false)}
-                  className="px-6 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-lg transition-colors"
+                  className="px-6 py-2 bg-black text-white hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   Kaydet
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Time Picker Dropdown */}
+          {showTimePicker && (
+            <div ref={timePickerRef} className="absolute top-full left-0 right-0 mt-3 bg-white rounded-xl shadow-2xl z-[9999] p-6 border border-gray-200 max-w-md mx-auto">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {activeTimeInput === 'start' ? 'Başlangıç Saati' : 'Bitiş Saati'}
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">Saat seçiniz</p>
+              </div>
+
+              <div className="grid grid-cols-4 gap-2 max-h-64 overflow-y-auto">
+                {generateTimeOptions().map((time) => (
+                  <button
+                    key={time}
+                    onClick={() => handleTimeSelect(time)}
+                    className={`p-3 text-sm rounded-lg transition-colors ${
+                      (activeTimeInput === 'start' && searchData.startTime === time) ||
+                      (activeTimeInput === 'end' && searchData.endTime === time)
+                        ? 'bg-black text-white'
+                        : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    }`}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex justify-end gap-4 mt-6 pt-6 border-t">
+                <button
+                  onClick={() => setShowTimePicker(false)}
+                  className="px-6 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  İptal
                 </button>
               </div>
             </div>

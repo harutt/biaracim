@@ -36,6 +36,7 @@
   "filters": {
     "all": "الكل",
     "airports": "المطارات",
+    "monthly": "شهريًا",
     "nearby": "بالقرب مني",
     "delivered": "التوصيل",
     "cities": "المدن"

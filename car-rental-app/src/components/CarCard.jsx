@@ -1,10 +1,16 @@
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 function CarCard({ car }) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+
+  const handleClick = () => {
+    navigate(`/car/${car.id}`)
+  }
 
   return (
-    <div className="group cursor-pointer">
+    <div onClick={handleClick} className="group cursor-pointer">
       <div className="relative overflow-hidden rounded-lg mb-3">
         <img
           src={car.image}

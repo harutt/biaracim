@@ -36,6 +36,7 @@
   "filters": {
     "all": "Все",
     "airports": "Аэропорты",
+    "monthly": "Ежемесячно",
     "nearby": "Рядом",
     "delivered": "Доставка",
     "cities": "Города"

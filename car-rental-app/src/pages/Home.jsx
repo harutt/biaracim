@@ -4,6 +4,8 @@ import FilterTabs from '../components/FilterTabs'
 import CarListings from '../components/CarListings'
 import AirportCarListings from '../components/AirportCarListings'
 import DeliveredCarListings from '../components/DeliveredCarListings'
+import MonthlyRentals from '../components/MonthlyRentals'
+import NearbyCarListings from '../components/NearbyCarListings'
 
 function Home() {
   const [activeFilter, setActiveFilter] = useState('all')
@@ -22,6 +24,10 @@ function Home() {
     switch (activeFilter) {
       case 'airports':
         return <AirportCarListings searchParams={searchParams} />
+      case 'monthly':
+        return <MonthlyRentals />
+      case 'nearby':
+        return <NearbyCarListings searchParams={searchParams} />
       case 'delivered':
         return <DeliveredCarListings searchParams={searchParams} />
       default:
