@@ -1,4 +1,12 @@
+import { useNavigate } from 'react-router-dom'
+
 function BecomeHost() {
+  const navigate = useNavigate()
+
+  const handleGetStarted = () => {
+    navigate('/list-car')
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -11,7 +19,10 @@ function BecomeHost() {
             <p className="text-xl mb-8 opacity-90">
               Aracınızı kiraya vererek ekstra gelir elde edin
             </p>
-            <button className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            <button
+              onClick={handleGetStarted}
+              className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+            >
               Hemen Başlayın
             </button>
           </div>
@@ -95,7 +106,10 @@ function BecomeHost() {
           <p className="text-xl mb-8 opacity-90">
             İlk listelemenizi oluşturun ve kazanmaya başlayın
           </p>
-          <button className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+          <button
+            onClick={handleGetStarted}
+            className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          >
             Ücretsiz Başlayın
           </button>
         </div>
