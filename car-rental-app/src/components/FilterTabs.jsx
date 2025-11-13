@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next'
+
 function FilterTabs({ activeFilter, onFilterChange }) {
+  const { t } = useTranslation()
   const filters = [
     { id: 'all', icon: '🚗' },
     { id: 'airports', icon: '✈️' },
