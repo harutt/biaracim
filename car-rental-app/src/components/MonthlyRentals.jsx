@@ -171,7 +171,7 @@ function MonthlyRentals() {
 
   return (
     <div className="bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="container">
         {monthlyCategories.map((category) => {
           const visibleCars = getVisibleCars(category.cars, category.id)
           const canGoBack = currentIndex[category.id] > 0

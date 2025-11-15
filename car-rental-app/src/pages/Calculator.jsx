@@ -44,7 +44,7 @@ function Calculator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 py-12">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-center mb-4">Fiyat Hesaplayıcı</h1>
           <p className="text-center text-gray-600 mb-12">

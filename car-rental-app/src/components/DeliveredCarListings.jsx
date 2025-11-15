@@ -235,7 +235,7 @@ function DeliveredCarListings() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container py-8">
       {/* Delivery Info Section */}
       <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 mb-12 shadow-sm">
         <div className="flex items-center justify-between flex-wrap gap-4">

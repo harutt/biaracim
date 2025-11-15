@@ -5,7 +5,7 @@ function WhyChoose() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-gray-50 to-white py-20">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">Nasıl Çalışır?</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Bireylerden araç kiralamak hiç bu kadar kolay olmamıştı.
@@ -16,7 +16,7 @@ function WhyChoose() {
 
       {/* For Renters Section */}
       <div className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Kiracılar İçin</h2>
             <p className="text-lg text-gray-600">İhtiyacınız olan aracı 3 basit adımda kiralayın</p>
@@ -161,7 +161,7 @@ function WhyChoose() {
 
       {/* For Hosts Section */}
       <div className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Araç Sahipleri İçin</h2>
             <p className="text-lg text-gray-600">Aracınızı paylaşın ve ekstra gelir elde edin</p>
@@ -302,7 +302,7 @@ function WhyChoose() {
 
       {/* Trust & Safety Section */}
       <div className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-6">Güven ve Güvenlik</h2>
             <p className="text-lg text-gray-600 mb-12">

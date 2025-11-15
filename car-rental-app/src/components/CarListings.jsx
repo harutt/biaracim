@@ -47,7 +47,7 @@ function CarListings({ searchParams }) {
   const showNoResults = filteredCars.length === 0
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container py-8">
       {searchParams && searchParams.location && (
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center gap-2 text-blue-800">

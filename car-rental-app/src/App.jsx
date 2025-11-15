@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Header from './components/Header'
@@ -18,32 +18,58 @@ import ListCar from './pages/ListCar'
 import AirportDetail from './pages/AirportDetail'
 import CarDetail from './pages/CarDetail'
 
+function AppContent() {
+  const location = useLocation()
+  const isCarDetailPage = location.pathname.startsWith('/car/')
+
+  if (isCarDetailPage) {
+    // Car detail page with its own layout
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <div className="w-full bg-white flex flex-col min-h-screen">
+          <main className="flex-1">
+            <Routes>
+              <Route path="/car/:id" element={<CarDetail />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    )
+  }
+
+  // Other pages with standard layout
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="max-w-[1280px] mx-auto w-full bg-white shadow-sm flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/become-host" element={<BecomeHost />} />
+            <Route path="/why-choose" element={<WhyChoose />} />
+            <Route path="/contact" element={<ContactSupport />} />
+            <Route path="/legal" element={<Legal />} />
+            <Route path="/insurance" element={<Insurance />} />
+            <Route path="/host-tools" element={<HostTools />} />
+            <Route path="/calculator" element={<Calculator />} />
+            <Route path="/list-car" element={<ListCar />} />
+            <Route path="/airport/:airportId" element={<AirportDetail />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </div>
+  )
+}
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <ScrollToTop />
-        <div className="min-h-screen bg-white flex flex-col">
-          <Header />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/become-host" element={<BecomeHost />} />
-              <Route path="/why-choose" element={<WhyChoose />} />
-              <Route path="/contact" element={<ContactSupport />} />
-              <Route path="/legal" element={<Legal />} />
-              <Route path="/insurance" element={<Insurance />} />
-              <Route path="/host-tools" element={<HostTools />} />
-              <Route path="/calculator" element={<Calculator />} />
-              <Route path="/list-car" element={<ListCar />} />
-              <Route path="/airport/:airportId" element={<AirportDetail />} />
-              <Route path="/car/:id" element={<CarDetail />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </AuthProvider>
     </Router>
   )

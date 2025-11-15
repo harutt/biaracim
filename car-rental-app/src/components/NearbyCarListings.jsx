@@ -69,7 +69,7 @@ function NearbyCarListings({ searchParams }) {
   const showNoResults = filteredCars.length === 0
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container py-8">
       {/* Location Permission Banner */}
       {!locationPermission && (
         <div className="mb-6 p-6 bg-white border-2 border-gray-200 rounded-2xl shadow-sm">

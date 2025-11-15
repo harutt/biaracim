@@ -118,7 +118,7 @@ function Hero({ onSearch }) {
         <div className="absolute inset-0 bg-gradient-to-br from-sky-100/90 via-purple-50/85 to-pink-50/85"></div>
       </div>
 
-      <div className="relative container mx-auto px-4 py-10">
+      <div className="relative container py-10">
         <div className="max-w-4xl mx-auto mb-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900">
             Kiralama ofisini atla

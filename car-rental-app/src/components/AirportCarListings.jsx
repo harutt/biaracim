@@ -225,7 +225,7 @@ function AirportCarListings() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container py-8">
       {airports.map((airport) => (
         <div key={airport.id} className="mb-12">
           {/* Airport Section Header */}

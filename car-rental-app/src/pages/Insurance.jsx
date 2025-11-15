@@ -3,13 +3,13 @@ function Insurance() {
     <div className="min-h-screen bg-white">
       {/* Hero */}
       <div className="bg-gradient-to-r from-green-600 to-emerald-700 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container text-center">
           <h1 className="text-4xl font-bold mb-4">Sigorta ve Koruma</h1>
           <p className="text-xl opacity-90">Her kiralama için kapsamlı sigorta koruması</p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container py-12">
         <div className="max-w-4xl mx-auto">
           {/* Insurance Plans */}
           <h2 className="text-3xl font-bold mb-8 text-center">Sigorta Paketleri</h2>

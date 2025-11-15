@@ -238,7 +238,7 @@ function AirportDetail() {
 
   if (!airport) {
     return (
-      <div className="container mx-auto px-4 py-16">
+      <div className="container py-16">
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
           Havalimanı bulunamadı
         </h1>
@@ -253,7 +253,7 @@ function AirportDetail() {
     <div className="bg-gray-50 min-h-screen">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-cyan-700 via-teal-700 to-cyan-800 text-white py-16">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
               {airport.name}
@@ -270,7 +270,7 @@ function AirportDetail() {
 
       {/* Filters */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container py-4">
           <div className="flex gap-4 items-center flex-wrap">
             <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors">
               Fiyat
@@ -292,7 +292,7 @@ function AirportDetail() {
       </div>
 
       {/* Cars Grid */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {airport.cars.map((car) => (
             <CarCard key={car.id} car={car} />
@@ -302,7 +302,7 @@ function AirportDetail() {
 
       {/* Info Section */}
       <div className="bg-white border-t border-gray-200 py-12">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
               {airport.name} Araç Kiralama Bilgileri

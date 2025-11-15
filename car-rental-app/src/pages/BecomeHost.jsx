@@ -11,7 +11,7 @@ function BecomeHost() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-20">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               Aracınızı Kiraya Verin
@@ -30,7 +30,7 @@ function BecomeHost() {
       </div>
 
       {/* Benefits Section */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container py-16">
         <h2 className="text-3xl font-bold text-center mb-12">Neden Araç Kiralamalısınız?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
@@ -59,7 +59,7 @@ function BecomeHost() {
 
       {/* How it Works */}
       <div className="bg-gray-50 py-16">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <h2 className="text-3xl font-bold text-center mb-12">Nasıl Çalışır?</h2>
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="flex items-start gap-6">
@@ -100,7 +100,7 @@ function BecomeHost() {
       </div>
 
       {/* CTA Section */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container py-16">
         <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-2xl p-12 text-center">
           <h2 className="text-3xl font-bold mb-4">Hemen Başlayın</h2>
           <p className="text-xl mb-8 opacity-90">
