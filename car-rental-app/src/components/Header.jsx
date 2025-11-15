@@ -121,14 +121,9 @@ function Header() {
               <div className="relative" ref={userRef}>
                 <button
                   onClick={() => setIsUserOpen(!isUserOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-full bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200"
+                  className="w-9 h-9 bg-black rounded-full flex items-center justify-center text-white text-sm font-semibold hover:bg-gray-800 transition-colors"
                 >
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                  <div className="w-7 h-7 bg-black rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                    {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
-                  </div>
+                  {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
                 </button>
 
                 {isUserOpen && (

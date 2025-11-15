@@ -110,18 +110,20 @@ function Hero({ onSearch }) {
   }
 
   return (
-    <div className="relative bg-gradient-to-r from-cyan-700 via-teal-700 to-cyan-800 text-white">
-      {/* Background Pattern/Image */}
-      <div className="absolute inset-0 opacity-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1600&h=600&fit=crop')] bg-cover bg-center"></div>
+    <div className="relative min-h-[400px] flex items-center">
+      {/* Background Image */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=2000&h=1200&fit=crop&q=80')] bg-cover bg-center"></div>
+        {/* Pastel overlay - more opaque for better text visibility */}
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-100/90 via-purple-50/85 to-pink-50/85"></div>
       </div>
 
-      <div className="relative container mx-auto px-4 py-10 pb-16">
-        <div className="max-w-4xl mx-auto text-center mb-4">
-          <h1 className="text-2xl md:text-4xl mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: '400', letterSpacing: '0.03em', lineHeight: '1.2' }}>
+      <div className="relative container mx-auto px-4 py-10">
+        <div className="max-w-4xl mx-auto mb-8 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900">
             Kiralama ofisini atla
           </h1>
-          <p className="text-xs md:text-sm opacity-85" style={{ fontFamily: "'Playfair Display', serif", fontWeight: '300', letterSpacing: '0.05em' }}>
+          <p className="text-lg md:text-xl font-medium text-gray-800">
             İstediğin arabayı, istediğin yerden kirala
           </p>
         </div>
