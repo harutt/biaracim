@@ -1,0 +1,230 @@
+/* ========================================
+   GALERI - Turo Jeep Wrangler Stili
+   ======================================== */
+
+.car-gallery {
+  max-width: 990px;
+  width: min(990px, 90vw);
+  margin: 24px auto;
+}
+
+/* ========================================
+   MAIN CONTENT - İçerikler
+   ======================================== */
+
+.car-content {
+  max-width: 990px;
+  width: min(990px, 90vw);
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Pricing Panel - Sticky */
+.car-pricing-panel {
+  position: sticky;
+  top: 20px;
+  z-index: 40;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+  height: fit-content;
+}
+
+/* Similar Cars, Footer Sections */
+.car-section {
+  max-width: 990px;
+  width: min(990px, 90vw);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.car-gallery__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  height: 480px;
+}
+
+.car-gallery__item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.car-gallery__item:hover {
+  filter: brightness(0.95);
+}
+
+.car-gallery__item--big {
+  grid-row: 1 / 3;
+  border-radius: 8px 0 0 8px;
+}
+
+.car-gallery__item--small-top {
+  border-radius: 0 8px 0 0;
+}
+
+.car-gallery__item--small-bottom {
+  border-radius: 0 0 8px 0;
+}
+
+.car-gallery__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Overlay "Fotoğrafları görüntüle" butonu */
+.car-gallery__view-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: white;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.car-gallery__view-btn:hover {
+  background: #f5f5f5;
+  transform: scale(1.02);
+}
+
+.car-gallery__view-btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Kalp favorileme butonu */
+.car-gallery__fav-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+  z-index: 10;
+}
+
+.car-gallery__fav-btn:hover {
+  transform: scale(1.1);
+}
+
+.car-gallery__fav-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* ========================================
+   LIGHTBOX - Tam Ekran Slider
+   ======================================== */
+
+.car-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.car-lightbox__container {
+  max-width: 990px;
+  width: min(990px, 90vw);
+  max-height: 90vh;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Close butonu - Sağ üst */
+.car-lightbox__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.car-lightbox__close:hover {
+  background: #f5f5f5;
+}
+
+.car-lightbox__close-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Scrollable alan - Tüm fotoğraflar */
+.car-lightbox__scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 60px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.car-lightbox__image-item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.car-lightbox__img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Responsive ayarlar */
+@media (max-width: 768px) {
+  .car-gallery__grid {
+    height: 360px;
+  }
+
+  .car-lightbox__scroll-area {
+    padding: 60px 20px 20px;
+  }
+}

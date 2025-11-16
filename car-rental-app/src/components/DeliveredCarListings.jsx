@@ -4,6 +4,9 @@ import CarCard from './CarCard'
 function DeliveredCarListings() {
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [showAddressInput, setShowAddressInput] = useState(false)
+  const [locationResults, setLocationResults] = useState([])
+  const [searchingLocation, setSearchingLocation] = useState(false)
+  const [showLocationResults, setShowLocationResults] = useState(false)
 
   // Sample data for different cities with delivery cars
   const deliveryCities = [
@@ -225,6 +228,53 @@ function DeliveredCarListings() {
     },
   ]
 
+  // Search location using Nominatim API
+  const searchLocation = async (query) => {
+    if (query.length < 3) {
+      setLocationResults([])
+      setShowLocationResults(false)
+      return
+    }
+
+    setSearchingLocation(true)
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?` +
+        `q=${encodeURIComponent(query)}&` +
+        `countrycodes=tr&` +
+        `format=json&` +
+        `limit=5&` +
+        `addressdetails=1`,
+        {
+          headers: {
+            'Accept-Language': 'tr'
+          }
+        }
+      )
+      const data = await response.json()
+      setLocationResults(data)
+      setShowLocationResults(true)
+    } catch (error) {
+      console.error('Konum arama hatası:', error)
+      setLocationResults([])
+    } finally {
+      setSearchingLocation(false)
+    }
+  }
+
+  const handleAddressChange = (e) => {
+    const value = e.target.value
+    setDeliveryAddress(value)
+    searchLocation(value)
+  }
+
+  const selectLocation = (location) => {
+    const displayName = location.display_name.split(',').slice(0, 3).join(',')
+    setDeliveryAddress(displayName)
+    setShowLocationResults(false)
+    console.log('Selected location:', location)
+  }
+
   // Scroll function for horizontal scrolling
   const scrollContainer = (containerId, direction) => {
     const container = document.getElementById(containerId)
@@ -259,14 +309,48 @@ function DeliveredCarListings() {
               Adres Gir
             </button>
           ) : (
-            <div className="flex gap-2 flex-1 max-w-md">
-              <input
-                type="text"
-                placeholder="Teslimat adresinizi girin..."
-                value={deliveryAddress}
-                onChange={(e) => setDeliveryAddress(e.target.value)}
-                className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              />
+            <div className="flex gap-2 flex-1 max-w-md relative">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Teslimat adresinizi girin..."
+                  value={deliveryAddress}
+                  onChange={handleAddressChange}
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                />
+
+                {/* Location Search Results Dropdown */}
+                {showLocationResults && locationResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+                    {searchingLocation ? (
+                      <div className="p-4 text-center text-gray-500">Aranıyor...</div>
+                    ) : (
+                      locationResults.map((location, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => selectLocation(location)}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                        >
+                          <div className="flex items-start gap-3">
+                            <svg className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                            </svg>
+                            <div className="flex-1">
+                              <div className="font-medium text-gray-900 text-sm">
+                                {location.display_name.split(',')[0]}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-0.5">
+                                {location.display_name.split(',').slice(1).join(',').trim()}
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={() => console.log('Searching for:', deliveryAddress)}
                 className="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium whitespace-nowrap"
