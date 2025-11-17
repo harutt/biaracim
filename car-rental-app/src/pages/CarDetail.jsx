@@ -1,20 +1,33 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import Header from '../components/Header'
+import MapView from '../components/MapView'
+import { getCarDetails, allCars } from '../data/cars'
+import { formatPrice } from '../utils/formatters'
 import './CarDetail.css'
 
 function CarDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+
+  // Get car data from data file
+  const carData = getCarDetails(id)
+
+  // If car not found, redirect to home
+  useEffect(() => {
+    if (!carData) {
+      navigate('/')
+    }
+  }, [carData, navigate])
   const [activeTab, setActiveTab] = useState('genel-bakis')
   const [selectedImage, setSelectedImage] = useState(0)
-  const [showStickyTabs, setShowStickyTabs] = useState(false)
   const [showGalleryModal, setShowGalleryModal] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
   const [tripStart, setTripStart] = useState('27/11/2025')
   const [tripEnd, setTripEnd] = useState('30/11/2025')
   const [startTime, setStartTime] = useState('10:00')
   const [endTime, setEndTime] = useState('10:00')
-  const [pickupLocation, setPickupLocation] = useState('İstanbul, Kadıköy')
+  const [pickupLocation, setPickupLocation] = useState(carData?.location || 'İstanbul, Kadıköy')
   const [deliveryLocation, setDeliveryLocation] = useState('')
   const [showLocationSearch, setShowLocationSearch] = useState(false)
   const [locationSearchType, setLocationSearchType] = useState('pickup') // 'pickup' or 'delivery'
@@ -28,64 +41,10 @@ function CarDetail() {
   const reviewsRef = useRef(null)
   const locationRef = useRef(null)
 
-  // Sample car data
-  const car = {
-    id: 1,
-    name: 'Nissan Sentra 2016',
-    category: 'SV',
-    rating: 5.0,
-    totalTrips: 28,
-    images: [
-      'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1621839673705-6617adf9e890?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=800&h=600&fit=crop',
-    ],
-    price: 1137,
-    originalPrice: 1238,
-    savings: 101,
-    specs: {
-      seats: 5,
-      gas: 'Benzin',
-      mpg: 34,
-      transmission: 'Otomatik'
-    },
-    host: {
-      name: 'Ahmet Yılmaz',
-      trips: 294,
-      joinedDate: 'Ara 2024',
-      rating: 4.9,
-      isAllStar: true,
-    },
-    features: {
-      safety: ['Geri görüş kamerası', 'Fren asistanı'],
-      connectivity: ['AUX girişi', 'Bluetooth', 'USB şarj', 'USB girişi'],
-      convenience: ['Kiralama ofisini atla', 'Ücretsiz ek sürücü ekle', '30 dakika teslimat toleransı'],
-      peaceOfMind: ['Teslimattan önce yıkama gerekmez', 'Temel yol yardımı', '7/24 müşteri desteği']
-    },
-    distance: 600,
-    distanceFee: 5,
-    rules: [
-      { title: 'Sigara içilmez', description: 'Araçta sigara içmek 500₺ cezaya tabidir' },
-      { title: 'Aracı temiz tutun', description: 'Aşırı kirli araç 500₺ cezaya tabidir' },
-      { title: 'Yakıt doldurun', description: 'Eksik yakıt ek ücrete tabidir' },
-      { title: 'Arazi kullanımı yasaktır', description: '' }
-    ],
-    reviews: [
-      { name: 'Mehmet K.', date: '9 Kasım 2025', rating: 5, text: 'Harika araba, harika ev sahibi. Tekrar kullanacağım.' },
-      { name: 'Ayşe Y.', date: '6 Kasım 2025', rating: 5, text: 'Mükemmel deneyim! Araç temiz, güvenilir ve sorunsuzdu.' },
-      { name: 'Can D.', date: '26 Ekim 2025', rating: 5, text: 'Temiz araç. Harika müşteri deneyimi ve destek. Bu lokasyonu ziyaret eden herkese tavsiye ederim' }
-    ],
-    ratings: {
-      cleanliness: 5.0,
-      maintenance: 5.0,
-      communication: 5.0,
-      convenience: 5.0,
-      accuracy: 5.0
-    }
-  }
+  // If no car data, return null (will redirect via useEffect above)
+  if (!carData) return null
+
+  const car = carData
 
   const tabs = [
     { id: 'genel-bakis', label: 'GENEL BAKIŞ', ref: overviewRef },
@@ -94,13 +53,9 @@ function CarDetail() {
     { id: 'konum', label: 'KONUM', ref: locationRef }
   ]
 
-  // Handle scroll for sticky tabs
+  // Handle scroll for sticky tabs - Auto-highlight based on scroll position
   useEffect(() => {
     const handleScroll = () => {
-      // Show sticky tabs after scrolling past images (around 500px)
-      setShowStickyTabs(window.scrollY > 500)
-
-      // Auto-highlight tabs based on scroll position
       const scrollPosition = window.scrollY + 200
 
       if (locationRef.current && scrollPosition >= locationRef.current.offsetTop) {
@@ -119,7 +74,18 @@ function CarDetail() {
   }, [])
 
   const scrollToSection = (ref) => {
-    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (ref.current) {
+      const headerHeight = 72 // sticky header height
+      const tabsHeight = 60 // sticky tabs height
+      const offset = headerHeight + tabsHeight + 20 // add some padding
+      const elementPosition = ref.current.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.scrollY - offset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      })
+    }
   }
 
   // Konum arama fonksiyonu (OpenStreetMap Nominatim API)
@@ -176,63 +142,29 @@ function CarDetail() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Initial Header with Search - FULL SCREEN WIDTH */}
-      <div className="w-full bg-white border-b border-gray-200 py-4">
-        <div className="max-w-[1280px] mx-auto px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/')} className="text-xl font-bold">BiAracım</button>
-            <div className="relative">
-              <svg className="w-5 h-5 absolute left-0 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Şehir, havaalanı, adres veya otel"
-                className="w-80 pl-7 pr-4 py-2 bg-transparent text-gray-900 placeholder-gray-400 border-b border-gray-300 focus:outline-none focus:border-gray-500 transition-colors"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <button className="p-2 hover:bg-gray-100 rounded-full">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
+      <Header />
 
-      {/* Sticky Tabs (appears on scroll) - FULL SCREEN WIDTH - Turo style */}
-      <div className={`w-full sticky top-0 z-50 bg-white border-b border-gray-200 transition-all duration-300 ${showStickyTabs ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
+      {/* Sticky Tabs - Always visible - FULL SCREEN WIDTH - Turo style */}
+      <div className="w-full sticky top-[72px] z-40 bg-white border-b border-gray-200">
         <div className="max-w-[1280px] mx-auto px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <button onClick={() => navigate('/')} className="text-xl font-bold py-4">BiAracım</button>
-              <nav className="flex gap-1 ml-8">
-                {tabs.map(tab => (
-                  <button
-                    key={tab.id}
-                    onClick={() => scrollToSection(tab.ref)}
-                    className={`px-4 py-4 text-sm font-semibold transition-colors relative ${
-                      activeTab === tab.id
-                        ? 'text-purple-600'
-                        : 'text-gray-600 hover:text-black'
-                    }`}
-                  >
-                    {tab.label}
-                    {activeTab === tab.id && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600"></div>
-                    )}
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
+          <nav className="flex gap-1">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => scrollToSection(tab.ref)}
+                className={`px-4 py-4 text-sm font-semibold transition-colors relative ${
+                  activeTab === tab.id
+                    ? 'text-purple-600'
+                    : 'text-gray-600 hover:text-black'
+                }`}
+              >
+                {tab.label}
+                {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600"></div>
+                )}
+              </button>
+            ))}
+          </nav>
         </div>
       </div>
 
@@ -484,7 +416,7 @@ function CarDetail() {
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 </div>
-                <span className="text-gray-600">({car.totalTrips} sürüş)</span>
+                <span className="text-gray-600">({car.trips} sürüş)</span>
               </div>
 
               {/* Specs */}
@@ -563,7 +495,7 @@ function CarDetail() {
                 <svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
-                <span className="text-gray-600">({car.totalTrips} değerlendirme)</span>
+                <span className="text-gray-600">({car.trips} değerlendirme)</span>
               </div>
 
               <div className="space-y-3 mb-8">
@@ -1082,14 +1014,14 @@ function CarDetail() {
       {/* Location Section - Full Width Centered */}
       <div ref={locationRef} id="konum" className="car-section py-8">
         <h3 className="text-2xl font-bold mb-6 text-center">Konum</h3>
-        <div className="bg-gray-100 h-96 rounded-lg flex items-center justify-center mb-6">
-          <div className="text-center">
-            <svg className="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <div className="text-gray-600">Harita</div>
-          </div>
+        <div className="h-96 rounded-lg overflow-hidden mb-6 border border-gray-200">
+          <MapView
+            cars={[{
+              ...car,
+              price: formatPrice(car.price)
+            }]}
+            selectedCarId={car.id}
+          />
         </div>
         <div className="font-semibold text-center">{pickupLocation}</div>
       </div>
@@ -1114,11 +1046,10 @@ function CarDetail() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { id: 2, name: 'Nissan Sentra 2025', rating: 5.0, trips: 24, price: 2238, image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=400&h=300&fit=crop' },
-              { id: 3, name: 'Nissan Sentra 2023', rating: 4.89, trips: 101, price: 2130, image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop' },
-              { id: 4, name: 'Nissan Sentra 2024', rating: 4.9, trips: 172, price: 2018, savings: 102, image: 'https://images.unsplash.com/photo-1621839673705-6617adf9e890?w=400&h=300&fit=crop' },
-            ].map((similarCar) => (
+            {allCars
+              .filter(c => c.type === car.type && c.id !== car.id)
+              .slice(0, 3)
+              .map((similarCar) => (
               <div
                 key={similarCar.id}
                 onClick={() => navigate(`/car/${similarCar.id}`)}

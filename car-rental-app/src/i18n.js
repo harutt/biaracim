@@ -1,11 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 // Translation files
 import translationTR from './locales/tr/translation.json';
 import translationEN from './locales/en/translation.json';
-import translationRU from './locales/ru/translation.json';
-import translationAR from './locales/ar/translation.json';
 
 const resources = {
   tr: {
@@ -13,21 +12,20 @@ const resources = {
   },
   en: {
     translation: translationEN
-  },
-  ru: {
-    translation: translationRU
-  },
-  ar: {
-    translation: translationAR
   }
 };
 
 i18n
+  .use(LanguageDetector) // Detect browser language
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'tr', // default language is Turkish
-    fallbackLng: 'tr',
+    fallbackLng: 'tr', // fallback to Turkish if browser language not supported
+    supportedLngs: ['en', 'tr'], // Only support English and Turkish
+    detection: {
+      order: ['localStorage', 'navigator'], // Check localStorage first, then browser language
+      caches: ['localStorage'], // Cache the selected language in localStorage
+    },
     interpolation: {
       escapeValue: false
     }

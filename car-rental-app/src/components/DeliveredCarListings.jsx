@@ -1,232 +1,31 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { deliveryCities } from '../data/cars'
+import { formatPrice } from '../utils/formatters'
 import CarCard from './CarCard'
 
 function DeliveredCarListings() {
+  const { t } = useTranslation()
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [showAddressInput, setShowAddressInput] = useState(false)
   const [locationResults, setLocationResults] = useState([])
   const [searchingLocation, setSearchingLocation] = useState(false)
   const [showLocationResults, setShowLocationResults] = useState(false)
+  const [visibleCount, setVisibleCount] = useState(8) // Show 8 cars initially (2 rows)
 
-  // Sample data for different cities with delivery cars
-  const deliveryCities = [
-    {
-      id: 'istanbul',
-      name: 'İstanbul',
-      cars: [
-        {
-          id: 1,
-          name: 'Toyota Corolla 2025',
-          image: 'https://images.unsplash.com/photo-1623869675781-80aa31012a5a?w=400&h=300&fit=crop',
-          price: '₺725',
-          originalPrice: '₺750',
-          savings: '₺25',
-          rating: 5.0,
-          trips: 7,
-          location: 'İstanbul',
-          deliveryAvailable: true
-        },
-        {
-          id: 2,
-          name: 'Toyota Corolla 2025',
-          image: 'https://images.unsplash.com/photo-1621839673705-6617adf9e890?w=400&h=300&fit=crop',
-          price: '₺580',
-          originalPrice: '₺610',
-          savings: '₺30',
-          rating: 4.92,
-          trips: 76,
-          location: 'İstanbul',
-          deliveryAvailable: true
-        },
-        {
-          id: 3,
-          name: 'Kia Forte 2023',
-          image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=400&h=300&fit=crop',
-          price: '₺393',
-          originalPrice: '₺430',
-          savings: '₺37',
-          rating: 5.0,
-          trips: 59,
-          location: 'İstanbul',
-          deliveryAvailable: true
-        },
-        {
-          id: 4,
-          name: 'Jeep Renegade 2020',
-          image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=400&h=300&fit=crop',
-          price: '₺460',
-          originalPrice: '₺500',
-          savings: '₺40',
-          rating: 5.0,
-          trips: 37,
-          location: 'İstanbul',
-          deliveryAvailable: true
-        },
-      ]
-    },
-    {
-      id: 'ankara',
-      name: 'Ankara',
-      cars: [
-        {
-          id: 5,
-          name: 'Volkswagen Passat 2022',
-          image: 'https://images.unsplash.com/photo-1621839673705-6617adf9e890?w=400&h=300&fit=crop',
-          price: '₺550',
-          originalPrice: '₺590',
-          savings: '₺40',
-          rating: 4.95,
-          trips: 48,
-          location: 'Ankara',
-          deliveryAvailable: true
-        },
-        {
-          id: 6,
-          name: 'BMW 3 Series 2022',
-          image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&h=300&fit=crop',
-          price: '₺950',
-          originalPrice: '₺1000',
-          savings: '₺50',
-          rating: 4.88,
-          trips: 52,
-          location: 'Ankara',
-          deliveryAvailable: true
-        },
-        {
-          id: 7,
-          name: 'Ford Focus 2022',
-          image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop',
-          price: '₺420',
-          originalPrice: '₺450',
-          savings: '₺30',
-          rating: 4.82,
-          trips: 45,
-          location: 'Ankara',
-          deliveryAvailable: true
-        },
-        {
-          id: 8,
-          name: 'Hyundai Tucson 2023',
-          image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=400&h=300&fit=crop',
-          price: '₺700',
-          originalPrice: '₺750',
-          savings: '₺50',
-          rating: 4.90,
-          trips: 41,
-          location: 'Ankara',
-          deliveryAvailable: true
-        },
-      ]
-    },
-    {
-      id: 'izmir',
-      name: 'İzmir',
-      cars: [
-        {
-          id: 9,
-          name: 'Mercedes C-Class 2021',
-          image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&h=300&fit=crop',
-          price: '₺1000',
-          originalPrice: '₺1100',
-          savings: '₺100',
-          rating: 4.96,
-          trips: 38,
-          location: 'İzmir',
-          deliveryAvailable: true
-        },
-        {
-          id: 10,
-          name: 'Peugeot 3008 2022',
-          image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=400&h=300&fit=crop',
-          price: '₺550',
-          originalPrice: '₺600',
-          savings: '₺50',
-          rating: 4.91,
-          trips: 44,
-          location: 'İzmir',
-          deliveryAvailable: true
-        },
-        {
-          id: 11,
-          name: 'Audi A4 2023',
-          image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=400&h=300&fit=crop',
-          price: '₺900',
-          originalPrice: '₺980',
-          savings: '₺80',
-          rating: 4.89,
-          trips: 36,
-          location: 'İzmir',
-          deliveryAvailable: true
-        },
-        {
-          id: 12,
-          name: 'Opel Insignia 2022',
-          image: 'https://images.unsplash.com/photo-1621839673705-6617adf9e890?w=400&h=300&fit=crop',
-          price: '₺480',
-          originalPrice: '₺520',
-          savings: '₺40',
-          rating: 4.83,
-          trips: 41,
-          location: 'İzmir',
-          deliveryAvailable: true
-        },
-      ]
-    },
-    {
-      id: 'antalya',
-      name: 'Antalya',
-      cars: [
-        {
-          id: 13,
-          name: 'Range Rover Evoque 2020',
-          image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=400&h=300&fit=crop',
-          price: '₺850',
-          originalPrice: '₺900',
-          savings: '₺50',
-          rating: 4.98,
-          trips: 60,
-          location: 'Antalya',
-          deliveryAvailable: true
-        },
-        {
-          id: 14,
-          name: 'Honda Civic 2023',
-          image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=400&h=300&fit=crop',
-          price: '₺600',
-          originalPrice: '₺650',
-          savings: '₺50',
-          rating: 4.87,
-          trips: 42,
-          location: 'Antalya',
-          deliveryAvailable: true
-        },
-        {
-          id: 15,
-          name: 'Renault Megane 2022',
-          image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=400&h=300&fit=crop',
-          price: '₺420',
-          originalPrice: '₺450',
-          savings: '₺30',
-          rating: 4.85,
-          trips: 48,
-          location: 'Antalya',
-          deliveryAvailable: true
-        },
-        {
-          id: 16,
-          name: 'BMW 5 Series 2021',
-          image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&h=300&fit=crop',
-          price: '₺1200',
-          originalPrice: '₺1300',
-          savings: '₺100',
-          rating: 4.88,
-          trips: 53,
-          location: 'Antalya',
-          deliveryAvailable: true
-        },
-      ]
-    },
-  ]
+  // Flatten all cars from all cities
+  const allDeliveryCars = deliveryCities.flatMap(city =>
+    city.cars.map(car => ({
+      ...car,
+      cityKey: city.nameKey
+    }))
+  )
+
+  const hasMore = visibleCount < allDeliveryCars.length
+
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + 6)
+  }
 
   // Search location using Nominatim API
   const searchLocation = async (query) => {
@@ -275,15 +74,6 @@ function DeliveredCarListings() {
     console.log('Selected location:', location)
   }
 
-  // Scroll function for horizontal scrolling
-  const scrollContainer = (containerId, direction) => {
-    const container = document.getElementById(containerId)
-    if (container) {
-      const scrollAmount = direction === 'left' ? -300 : 300
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-    }
-  }
-
   return (
     <div className="container py-8">
       {/* Delivery Info Section */}
@@ -297,23 +87,23 @@ function DeliveredCarListings() {
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 text-lg">Doğrudan size teslim edilebilecek araçları görün</h3>
-              <p className="text-sm text-gray-600 mt-1">Araç sahibi, seçtiğiniz adreste sizi karşılayacak</p>
+              <h3 className="font-semibold text-gray-900 text-lg">{t('deliveredCarListings.seeDeliveryCars')}</h3>
+              <p className="text-sm text-gray-600 mt-1">{t('deliveredCarListings.ownerWillMeet')}</p>
             </div>
           </div>
           {!showAddressInput ? (
             <button
               onClick={() => setShowAddressInput(true)}
-              className="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium whitespace-nowrap"
+              className="btn-primary whitespace-nowrap"
             >
-              Adres Gir
+              {t('deliveredCarListings.enterAddress')}
             </button>
           ) : (
             <div className="flex gap-2 flex-1 max-w-md relative">
               <div className="flex-1 relative">
                 <input
                   type="text"
-                  placeholder="Teslimat adresinizi girin..."
+                  placeholder={t('deliveredCarListings.deliveryAddressPlaceholder')}
                   value={deliveryAddress}
                   onChange={handleAddressChange}
                   className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -323,7 +113,7 @@ function DeliveredCarListings() {
                 {showLocationResults && locationResults.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
                     {searchingLocation ? (
-                      <div className="p-4 text-center text-gray-500">Aranıyor...</div>
+                      <div className="p-4 text-center text-gray-500">{t('deliveredCarListings.searching')}</div>
                     ) : (
                       locationResults.map((location, idx) => (
                         <button
@@ -353,59 +143,41 @@ function DeliveredCarListings() {
 
               <button
                 onClick={() => console.log('Searching for:', deliveryAddress)}
-                className="px-6 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium whitespace-nowrap"
+                className="btn-primary whitespace-nowrap"
               >
-                Ara
+                {t('deliveredCarListings.search')}
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* City Sections */}
-      {deliveryCities.map((city) => (
-        <div key={city.id} className="mb-12">
-          {/* City Section Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold hover:underline cursor-pointer">
-              {city.name}'a teslim edilen araç kiralamalar →
-            </h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => scrollContainer(`delivery-${city.id}`, 'left')}
-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                aria-label="Sola kaydır"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                onClick={() => scrollContainer(`delivery-${city.id}`, 'right')}
-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                aria-label="Sağa kaydır"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Horizontal Scrolling Car Cards */}
-          <div
-            id={`delivery-${city.id}`}
-            className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {city.cars.map((car) => (
-              <div key={car.id} className="flex-none w-80">
-                <CarCard car={car} />
-              </div>
-            ))}
-          </div>
+      {/* All Delivery Cars Grid */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-6">
+          {t('deliveredCarListings.availableCars')} →
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {allDeliveryCars.slice(0, visibleCount).map((car) => (
+            <CarCard key={car.id} car={{
+              ...car,
+              price: formatPrice(car.price),
+              location: t(car.cityKey)
+            }} />
+          ))}
         </div>
-      ))}
+
+        {hasMore && (
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={handleLoadMore}
+              className="btn-load-more"
+            >
+              {t('common.loadMore')}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

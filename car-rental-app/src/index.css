@@ -2,6 +2,105 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Centralized Design System */
+@layer components {
+  /* Primary Button - Main action buttons (Turo purple) */
+  .btn-primary {
+    @apply px-6 py-2.5 text-white rounded-lg transition-colors font-medium shadow-sm;
+    background-color: #593CFB;
+  }
+
+  .btn-primary:hover {
+    background-color: #4c34d9;
+  }
+
+  .btn-primary:active {
+    background-color: #4027b8;
+  }
+
+  /* Secondary Button - Alternative actions */
+  .btn-secondary {
+    @apply px-6 py-2.5 border border-gray-300 bg-white text-gray-700 rounded-lg transition-colors font-medium;
+    @apply hover:bg-gray-50 active:bg-gray-100;
+  }
+
+  /* Search Button - Icon-only search button */
+  .btn-search {
+    @apply px-4 py-2 text-white rounded-lg transition-colors shadow-sm flex items-center justify-center;
+    background-color: #593CFB;
+  }
+
+  .btn-search:hover {
+    background-color: #4c34d9;
+  }
+
+  .btn-search:active {
+    background-color: #4027b8;
+  }
+
+  /* Tab Button - For switching between views */
+  .btn-tab {
+    @apply px-6 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .btn-tab-active {
+    @apply px-6 py-2 rounded-lg font-medium transition-colors text-white shadow-sm;
+    background-color: #593CFB;
+  }
+
+  .btn-tab-inactive {
+    @apply px-6 py-2 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200;
+  }
+
+  /* Filter Button - For filter tabs */
+  .btn-filter {
+    @apply flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors;
+  }
+
+  .btn-filter-active {
+    @apply flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors text-white shadow-sm;
+    background-color: #593CFB;
+  }
+
+  .btn-filter-inactive {
+    @apply flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors bg-white text-black border border-gray-300 hover:bg-gray-100;
+  }
+
+  /* Load More Button */
+  .btn-load-more {
+    @apply px-8 py-3 text-white rounded-lg transition-colors font-medium shadow-sm;
+    background-color: #593CFB;
+  }
+
+  .btn-load-more:hover {
+    background-color: #4c34d9;
+  }
+
+  .btn-load-more:active {
+    background-color: #4027b8;
+  }
+
+  /* Form Inputs */
+  .input-text {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg transition-colors;
+    @apply focus:outline-none focus:border-transparent;
+  }
+
+  .input-text:focus {
+    @apply ring-2;
+    ring-color: #593CFB;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+  }
+
+  .card-hover {
+    @apply card transition-shadow hover:shadow-md;
+  }
+}
+
 @layer utilities {
   /* Hide scrollbar for horizontal scrolling */
   .scrollbar-hide {

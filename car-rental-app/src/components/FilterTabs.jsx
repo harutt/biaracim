@@ -34,11 +34,7 @@ function FilterTabs({ activeFilter, onFilterChange }) {
             <button
               key={filter.id}
               onClick={() => onFilterChange(filter.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-                activeFilter === filter.id
-                  ? 'bg-black text-white'
-                  : 'bg-white text-black hover:bg-gray-100 border border-gray-300'
-              }`}
+              className={activeFilter === filter.id ? 'btn-filter-active' : 'btn-filter-inactive'}
             >
               <FilterIcon type={filter.iconType} isActive={activeFilter === filter.id} />
               {t(`filters.${filter.id}`)}

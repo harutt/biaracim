@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 function Hero({ onSearch }) {
+  const navigate = useNavigate()
   const { t } = useTranslation()
   const [searchData, setSearchData] = useState({
     location: '',
@@ -41,6 +43,18 @@ function Hero({ onSearch }) {
   }, [])
 
   const handleSearch = () => {
+    // Build query parameters
+    const params = new URLSearchParams()
+    if (searchData.location) params.append('location', searchData.location)
+    if (searchData.startDate) params.append('startDate', searchData.startDate)
+    if (searchData.endDate) params.append('endDate', searchData.endDate)
+    if (searchData.startTime) params.append('startTime', searchData.startTime)
+    if (searchData.endTime) params.append('endTime', searchData.endTime)
+
+    // Navigate to search results page
+    navigate(`/search?${params.toString()}`)
+
+    // Also call the onSearch callback if provided (for backwards compatibility)
     if (onSearch) {
       onSearch(searchData)
     }
@@ -85,8 +99,8 @@ function Hero({ onSearch }) {
   }
 
   const locations = {
-    current: { iconType: 'pin', label: 'Mevcut konum', value: 'current' },
-    anywhere: { iconType: 'globe', label: 'Her yerde', subtitle: 'Tüm araçlara göz at', value: '' },
+    current: { iconType: 'pin', label: t('hero.currentLocation'), value: 'current' },
+    anywhere: { iconType: 'globe', label: t('hero.anywhere'), subtitle: t('hero.browseAllCars'), value: '' },
     airports: [
       { iconType: 'plane', label: 'İstanbul Havalimanı (IST)', value: 'İstanbul Havalimanı' },
       { iconType: 'plane', label: 'Sabiha Gökçen Havalimanı (SAW)', value: 'Sabiha Gökçen' },
@@ -121,10 +135,10 @@ function Hero({ onSearch }) {
       <div className="relative container py-10">
         <div className="max-w-4xl mx-auto mb-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900">
-            Kiralama ofisini atla
+            {t('hero.title')}
           </h1>
           <p className="text-lg md:text-xl font-medium text-gray-800">
-            İstediğin arabayı, istediğin yerden kirala
+            {t('hero.subtitle')}
           </p>
         </div>
 
@@ -133,10 +147,10 @@ function Hero({ onSearch }) {
           <div className="flex flex-col md:flex-row gap-0.5 relative overflow-visible">
             {/* Where */}
             <div className="flex-1 p-2 relative" ref={locationRef}>
-              <label className="block text-[9px] text-gray-600 mb-0">Nerede</label>
+              <label className="block text-[9px] text-gray-600 mb-0">{t('hero.where')}</label>
               <input
                 type="text"
-                placeholder="Şehir, havaalanı, adres veya otel"
+                placeholder={t('hero.wherePlaceholder')}
                 value={searchData.location}
                 onChange={(e) => setSearchData(prev => ({ ...prev, location: e.target.value }))}
                 onFocus={() => setShowLocationDropdown(true)}
@@ -171,7 +185,7 @@ function Hero({ onSearch }) {
                     <hr className="my-2" />
 
                     {/* Airports */}
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">Havaalanları</div>
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">{t('hero.airports')}</div>
                     {locations.airports.map((airport, idx) => (
                       <button
                         key={idx}
@@ -186,7 +200,7 @@ function Hero({ onSearch }) {
                     <hr className="my-2" />
 
                     {/* Cities */}
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">Şehirler</div>
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">{t('hero.cities')}</div>
                     {locations.cities.map((city, idx) => (
                       <button
                         key={idx}
@@ -201,7 +215,7 @@ function Hero({ onSearch }) {
                     <hr className="my-2" />
 
                     {/* Train Stations */}
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">Tren istasyonları</div>
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">{t('hero.trainStations')}</div>
                     {locations.trainStations.map((station, idx) => (
                       <button
                         key={idx}
@@ -216,7 +230,7 @@ function Hero({ onSearch }) {
                     <hr className="my-2" />
 
                     {/* Hotels */}
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">Oteller</div>
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">{t('hero.hotels')}</div>
                     {locations.hotels.map((hotel, idx) => (
                       <button
                         key={idx}
@@ -237,7 +251,7 @@ function Hero({ onSearch }) {
 
             {/* From Date */}
             <div className="flex-1 p-2 relative">
-              <label className="block text-[9px] text-gray-600 mb-0">Başlangıç</label>
+              <label className="block text-[9px] text-gray-600 mb-0">{t('hero.from')}</label>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
@@ -247,7 +261,7 @@ function Hero({ onSearch }) {
                   }}
                   className="flex-1 text-left text-gray-800 text-sm hover:bg-gray-50 rounded px-2 py-1"
                 >
-                  {searchData.startDate || 'Tarih ekle'}
+                  {searchData.startDate || t('hero.addDate')}
                 </button>
                 <button
                   onClick={() => {
@@ -274,7 +288,7 @@ function Hero({ onSearch }) {
 
             {/* Until Date */}
             <div className="flex-1 p-2 relative">
-              <label className="block text-[9px] text-gray-600 mb-0">Bitiş</label>
+              <label className="block text-[9px] text-gray-600 mb-0">{t('hero.until')}</label>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
@@ -284,7 +298,7 @@ function Hero({ onSearch }) {
                   }}
                   className="flex-1 text-left text-gray-800 text-sm hover:bg-gray-50 rounded px-2 py-1"
                 >
-                  {searchData.endDate || 'Tarih ekle'}
+                  {searchData.endDate || t('hero.addDate')}
                 </button>
                 <button
                   onClick={() => {
@@ -309,7 +323,7 @@ function Hero({ onSearch }) {
             {/* Search Button */}
             <button
               onClick={handleSearch}
-              className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center"
+              className="btn-search"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -323,23 +337,15 @@ function Hero({ onSearch }) {
               <div className="flex justify-center gap-2 mb-6">
                 <button
                   onClick={() => setCalendarView('dates')}
-                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                    calendarView === 'dates'
-                      ? 'bg-gray-800 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
+                  className={calendarView === 'dates' ? 'btn-tab-active' : 'btn-tab-inactive'}
                 >
-                  Tarihler
+                  {t('hero.dates')}
                 </button>
                 <button
                   onClick={() => setCalendarView('months')}
-                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                    calendarView === 'months'
-                      ? 'bg-gray-800 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
+                  className={calendarView === 'months' ? 'btn-tab-active' : 'btn-tab-inactive'}
                 >
-                  Aylar
+                  {t('hero.months')}
                 </button>
               </div>
 
@@ -349,7 +355,7 @@ function Hero({ onSearch }) {
                   <div>
                     <h3 className="text-center font-semibold text-gray-800 mb-4">Ekim 2025</h3>
                     <div className="grid grid-cols-7 gap-2 text-center text-sm">
-                      {['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'].map(day => (
+                      {[t('hero.monday'), t('hero.tuesday'), t('hero.wednesday'), t('hero.thursday'), t('hero.friday'), t('hero.saturday'), t('hero.sunday')].map(day => (
                         <div key={day} className="text-gray-500 font-medium">{day}</div>
                       ))}
                       {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
@@ -374,7 +380,7 @@ function Hero({ onSearch }) {
                   <div>
                     <h3 className="text-center font-semibold text-gray-800 mb-4">Kasım 2025</h3>
                     <div className="grid grid-cols-7 gap-2 text-center text-sm">
-                      {['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'].map(day => (
+                      {[t('hero.monday'), t('hero.tuesday'), t('hero.wednesday'), t('hero.thursday'), t('hero.friday'), t('hero.saturday'), t('hero.sunday')].map(day => (
                         <div key={day} className="text-gray-500 font-medium">{day}</div>
                       ))}
                       {Array.from({ length: 30 }, (_, i) => i + 1).map(day => (
@@ -401,15 +407,15 @@ function Hero({ onSearch }) {
               <div className="flex justify-end gap-4 mt-6 pt-6 border-t">
                 <button
                   onClick={() => setSearchData(prev => ({ ...prev, startDate: '', endDate: '' }))}
-                  className="px-6 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="btn-secondary"
                 >
-                  Sıfırla
+                  {t('hero.reset')}
                 </button>
                 <button
                   onClick={() => setShowDatePicker(false)}
-                  className="px-6 py-2 bg-black text-white hover:bg-gray-800 rounded-lg transition-colors"
+                  className="btn-primary"
                 >
-                  Kaydet
+                  {t('hero.save')}
                 </button>
               </div>
             </div>
@@ -420,9 +426,9 @@ function Hero({ onSearch }) {
             <div ref={timePickerRef} className="absolute top-full left-0 right-0 mt-3 bg-white rounded-xl shadow-2xl z-[9999] p-6 border border-gray-200 max-w-md mx-auto">
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {activeTimeInput === 'start' ? 'Başlangıç Saati' : 'Bitiş Saati'}
+                  {activeTimeInput === 'start' ? t('hero.startTime') : t('hero.endTime')}
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">Saat seçiniz</p>
+                <p className="text-sm text-gray-600 mt-1">{t('hero.selectTime')}</p>
               </div>
 
               <div className="grid grid-cols-4 gap-2 max-h-64 overflow-y-auto">
@@ -433,7 +439,7 @@ function Hero({ onSearch }) {
                     className={`p-3 text-sm rounded-lg transition-colors ${
                       (activeTimeInput === 'start' && searchData.startTime === time) ||
                       (activeTimeInput === 'end' && searchData.endTime === time)
-                        ? 'bg-black text-white'
+                        ? 'bg-primary-500 text-white'
                         : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
                     }`}
                   >
@@ -447,7 +453,7 @@ function Hero({ onSearch }) {
                   onClick={() => setShowTimePicker(false)}
                   className="px-6 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  İptal
+                  {t('hero.cancel')}
                 </button>
               </div>
             </div>

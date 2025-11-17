@@ -17,10 +17,12 @@ import Calculator from './pages/Calculator'
 import ListCar from './pages/ListCar'
 import AirportDetail from './pages/AirportDetail'
 import CarDetail from './pages/CarDetail'
+import SearchResults from './pages/SearchResults'
 
 function AppContent() {
   const location = useLocation()
   const isCarDetailPage = location.pathname.startsWith('/car/')
+  const isSearchResultsPage = location.pathname.startsWith('/search')
 
   if (isCarDetailPage) {
     // Car detail page with its own layout
@@ -30,6 +32,22 @@ function AppContent() {
           <main className="flex-1">
             <Routes>
               <Route path="/car/:id" element={<CarDetail />} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    )
+  }
+
+  if (isSearchResultsPage) {
+    // Search results page with wider layout
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <div className="w-full bg-white flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/search" element={<SearchResults />} />
             </Routes>
           </main>
         </div>

@@ -6,8 +6,27 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Lexend', 'sans-serif'],
+      },
       maxWidth: {
         'container': '1440px', // Custom max-width like Turo
+      },
+      colors: {
+        // Turo-inspired primary color palette
+        primary: {
+          DEFAULT: '#593CFB',
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#593CFB', // Main Turo purple
+          600: '#4c34d9',
+          700: '#4027b8',
+          800: '#351f96',
+          900: '#2d1b7b',
+        },
       },
     },
     container: {

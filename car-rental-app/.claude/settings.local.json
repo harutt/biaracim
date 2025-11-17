@@ -4,7 +4,10 @@
       "Bash(npm run dev:*)",
       "Bash(timeout /t 5)",
       "WebFetch(domain:turo.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npm run dev:5173:*)",
+      "Bash(timeout /t 3)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
