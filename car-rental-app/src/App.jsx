@@ -107,8 +107,8 @@ function AppContent() {
 
   // Other pages with standard layout
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="max-w-[1280px] mx-auto w-full bg-white shadow-sm flex flex-col min-h-screen">
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="w-full bg-white flex flex-col min-h-screen">
         <Header />
         <main className="flex-1">
           <Routes>

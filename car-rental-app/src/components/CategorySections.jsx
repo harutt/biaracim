@@ -98,7 +98,7 @@ function CategorySections() {
   }
 
   return (
-    <div className="container py-8 space-y-12">
+    <div className="container max-w-5xl mx-auto px-4 py-8 space-y-12">
       {categories.map((category) => {
         const cars = getCategoryCars(category)
 
@@ -135,11 +135,11 @@ function CategorySections() {
 
             <div
               ref={(el) => scrollRefs.current[category.id] = el}
-              className="overflow-x-auto scrollbar-hide -mx-4 px-4"
+              className="overflow-x-auto scrollbar-hide"
             >
-              <div className="flex gap-6 pb-4" style={{ width: 'max-content' }}>
+              <div className="flex gap-4 pb-4">
                 {cars.map((car) => (
-                  <div key={car.id} className="w-[280px] flex-shrink-0">
+                  <div key={car.id} className="w-[235px] flex-shrink-0">
                     <CarCard car={{
                       ...car,
                       price: formatPrice(car.price),

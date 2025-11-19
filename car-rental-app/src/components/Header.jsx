@@ -15,9 +15,15 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserOpen, setIsUserOpen] = useState(false)
   const [isLocationOpen, setIsLocationOpen] = useState(false)
+  const [isStartDateOpen, setIsStartDateOpen] = useState(false)
+  const [isEndDateOpen, setIsEndDateOpen] = useState(false)
+  const [isAgeOpen, setIsAgeOpen] = useState(false)
   const menuRef = useRef(null)
   const userRef = useRef(null)
   const locationRef = useRef(null)
+  const startDateRef = useRef(null)
+  const endDateRef = useRef(null)
+  const ageRef = useRef(null)
 
   // Get location from URL params on search page
   const searchLocation = searchParams.get('location') || ''
@@ -48,6 +54,15 @@ function Header() {
       if (locationRef.current && !locationRef.current.contains(event.target)) {
         setIsLocationOpen(false)
       }
+      if (startDateRef.current && !startDateRef.current.contains(event.target)) {
+        setIsStartDateOpen(false)
+      }
+      if (endDateRef.current && !endDateRef.current.contains(event.target)) {
+        setIsEndDateOpen(false)
+      }
+      if (ageRef.current && !ageRef.current.contains(event.target)) {
+        setIsAgeOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -60,9 +75,55 @@ function Header() {
     setIsLocationOpen(false)
   }
 
+  const handleDateSelect = (date, type) => {
+    const newParams = new URLSearchParams(searchParams)
+    if (type === 'start') {
+      newParams.set('startDate', date)
+      if (!newParams.get('startTime')) {
+        newParams.set('startTime', '10:00')
+      }
+    } else {
+      newParams.set('endDate', date)
+      if (!newParams.get('endTime')) {
+        newParams.set('endTime', '10:00')
+      }
+    }
+    navigate(`/search?${newParams.toString()}`)
+  }
+
+  const handleTimeSelect = (time, type) => {
+    const newParams = new URLSearchParams(searchParams)
+    if (type === 'start') {
+      newParams.set('startTime', time)
+    } else {
+      newParams.set('endTime', time)
+    }
+    navigate(`/search?${newParams.toString()}`)
+  }
+
+  const handleAgeSelect = (age) => {
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('age', age)
+    navigate(`/search?${newParams.toString()}`)
+    setIsAgeOpen(false)
+  }
+
+  // Generate time options (every 30 minutes)
+  const generateTimeOptions = () => {
+    const times = []
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+        times.push(timeString)
+      }
+    }
+    return times
+  }
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className={`mx-auto px-4 md:px-8 py-4 ${isHomePage ? 'max-w-[1280px]' : ''}`}>
+      <div className="w-full">
+        <div className="container max-w-5xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Left side - Logo and Search */}
           <div className="flex items-center gap-2 flex-1">
@@ -206,10 +267,10 @@ function Header() {
                 </div>
 
                 {/* From */}
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 relative" ref={startDateRef}>
                   <label className="block text-xs font-semibold mb-1" style={{ color: '#593CFB' }}>Başlangıç</label>
                   <button
-                    onClick={() => navigate('/')}
+                    onClick={() => setIsStartDateOpen(!isStartDateOpen)}
                     className="flex items-center gap-2 w-full"
                   >
                     <span className="text-gray-900 text-sm truncate">
@@ -221,14 +282,62 @@ function Header() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
+                  {searchParams.get('startTime') && (
+                    <button
+                      onClick={() => setIsStartDateOpen(!isStartDateOpen)}
+                      className="flex items-center gap-2 w-full mt-1"
+                    >
+                      <span className="text-gray-700 text-xs truncate">
+                        {searchParams.get('startTime')}
+                      </span>
+                    </button>
+                  )}
                   <div className="h-0.5 bg-gray-200 mt-1"></div>
+
+                  {/* Start Date/Time Picker Modal */}
+                  {isStartDateOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 p-6 z-50 max-h-96 overflow-y-auto">
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-sm font-semibold mb-2">Tarih Seç</h3>
+                          <input
+                            type="date"
+                            value={searchParams.get('startDate') || ''}
+                            onChange={(e) => handleDateSelect(e.target.value, 'start')}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-semibold mb-2">Saat Seç</h3>
+                          <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
+                            {generateTimeOptions().map((time) => (
+                              <button
+                                key={time}
+                                onClick={() => {
+                                  handleTimeSelect(time, 'start')
+                                  setIsStartDateOpen(false)
+                                }}
+                                className={`p-2 text-xs rounded-lg transition-colors ${
+                                  searchParams.get('startTime') === time
+                                    ? 'bg-purple-600 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
+                                }`}
+                              >
+                                {time}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Until */}
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 relative" ref={endDateRef}>
                   <label className="block text-xs font-semibold mb-1" style={{ color: '#593CFB' }}>Bitiş</label>
                   <button
-                    onClick={() => navigate('/')}
+                    onClick={() => setIsEndDateOpen(!isEndDateOpen)}
                     className="flex items-center gap-2 w-full"
                   >
                     <span className="text-gray-900 text-sm truncate">
@@ -240,22 +349,92 @@ function Header() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
+                  {searchParams.get('endTime') && (
+                    <button
+                      onClick={() => setIsEndDateOpen(!isEndDateOpen)}
+                      className="flex items-center gap-2 w-full mt-1"
+                    >
+                      <span className="text-gray-700 text-xs truncate">
+                        {searchParams.get('endTime')}
+                      </span>
+                    </button>
+                  )}
                   <div className="h-0.5 bg-gray-200 mt-1"></div>
+
+                  {/* End Date/Time Picker Modal */}
+                  {isEndDateOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 p-6 z-50 max-h-96 overflow-y-auto">
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-sm font-semibold mb-2">Tarih Seç</h3>
+                          <input
+                            type="date"
+                            value={searchParams.get('endDate') || ''}
+                            onChange={(e) => handleDateSelect(e.target.value, 'end')}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-semibold mb-2">Saat Seç</h3>
+                          <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
+                            {generateTimeOptions().map((time) => (
+                              <button
+                                key={time}
+                                onClick={() => {
+                                  handleTimeSelect(time, 'end')
+                                  setIsEndDateOpen(false)
+                                }}
+                                className={`p-2 text-xs rounded-lg transition-colors ${
+                                  searchParams.get('endTime') === time
+                                    ? 'bg-purple-600 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
+                                }`}
+                              >
+                                {time}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Age */}
-                <div className="min-w-0">
+                <div className="min-w-0 relative" ref={ageRef}>
                   <label className="block text-xs font-semibold mb-1" style={{ color: '#593CFB' }}>Yaş</label>
                   <button
-                    onClick={() => navigate('/')}
+                    onClick={() => setIsAgeOpen(!isAgeOpen)}
                     className="flex items-center gap-2"
                   >
-                    <span className="text-gray-900 text-sm">30</span>
+                    <span className="text-gray-900 text-sm">{searchParams.get('age') || '30'}</span>
                     <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
                   <div className="h-0.5 bg-gray-200 mt-1"></div>
+
+                  {/* Age Picker Modal */}
+                  {isAgeOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 z-50 max-h-64 overflow-y-auto">
+                      <h3 className="text-sm font-semibold mb-3">Yaşınızı Seçin</h3>
+                      <div className="space-y-1">
+                        {[18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75].map((age) => (
+                          <button
+                            key={age}
+                            onClick={() => handleAgeSelect(age.toString())}
+                            className={`w-full px-3 py-2 text-left rounded-lg transition-colors ${
+                              (searchParams.get('age') || '30') === age.toString()
+                                ? 'bg-purple-600 text-white'
+                                : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            {age}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : !isHomePage && (
@@ -562,6 +741,7 @@ function Header() {
               )}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </header>

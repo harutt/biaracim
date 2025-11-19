@@ -7,6 +7,7 @@ import DeliveredCarListings from '../components/DeliveredCarListings'
 import MonthlyRentals from '../components/MonthlyRentals'
 import NearbyCarListings from '../components/NearbyCarListings'
 import CategorySections from '../components/CategorySections'
+import RecentSearches from '../components/RecentSearches'
 
 function Home() {
   const [activeFilter, setActiveFilter] = useState('all')
@@ -34,6 +35,7 @@ function Home() {
       default:
         return (
           <>
+            <RecentSearches />
             <CategorySections />
             <CarListings searchParams={searchParams} />
           </>

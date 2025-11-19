@@ -182,15 +182,18 @@ function Hero({ onSearch }) {
   }
 
   return (
-    <div className="relative min-h-[400px] flex items-center">
-      {/* Background Image */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=2000&h=1200&fit=crop&q=80')] bg-cover bg-center"></div>
-        {/* Pastel overlay - more opaque for better text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-100/90 via-purple-50/85 to-pink-50/85"></div>
+    <div className="relative min-h-[400px] flex items-center w-full overflow-hidden">
+      {/* Background Image - constrained to container width */}
+      <div className="absolute inset-0 flex justify-center">
+        <div className="w-full max-w-5xl relative h-full">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=2000&h=1200&fit=crop&q=80')] bg-cover bg-center rounded-2xl"></div>
+          {/* Pastel overlay - more opaque for better text visibility */}
+          <div className="absolute inset-0 bg-gradient-to-br from-sky-100/90 via-purple-50/85 to-pink-50/85 rounded-2xl"></div>
+        </div>
       </div>
 
-      <div className="relative container py-10">
+      <div className="relative w-full py-10">
+        <div className="container max-w-5xl mx-auto px-4">
         <div className="max-w-4xl mx-auto mb-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gray-900">
             {t('hero.title')}
@@ -529,6 +532,7 @@ function Hero({ onSearch }) {
               </div>
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>

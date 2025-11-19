@@ -193,7 +193,7 @@ function Footer() {
 
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
-      <div className="container py-12">
+      <div className="container max-w-5xl mx-auto px-4 py-12">
         {/* Browse Categories Section with Tabs */}
         <div className="mb-12 pb-12 border-b border-gray-200">
           {/* Tab Headers */}

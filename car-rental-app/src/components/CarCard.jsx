@@ -15,7 +15,7 @@ function CarCard({ car }) {
         <img
           src={car.image}
           alt={car.name}
-          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {/* Savings badge - only show if savings data exists */}
         {car.savings && (

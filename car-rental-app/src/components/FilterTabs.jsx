@@ -28,7 +28,7 @@ function FilterTabs({ activeFilter, onFilterChange }) {
 
   return (
     <div className="border-b border-gray-200">
-      <div className="container py-4">
+      <div className="container max-w-5xl mx-auto px-4 py-4">
         <div className="flex justify-center gap-2 overflow-x-auto">
           {filters.map((filter) => (
             <button
