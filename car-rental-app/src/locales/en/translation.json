@@ -272,5 +272,27 @@
     "friday": "Fri",
     "saturday": "Sat",
     "sunday": "Sun"
+  },
+  "categories": {
+    "exploreTitle": "Explore Categories",
+    "teslaIstanbul": "Tesla Rental in Istanbul",
+    "suvAnkara": "SUV Rental in Ankara",
+    "newerIzmir": "Newer Car Rental in Izmir",
+    "airportSaw": "Car Rental at Sabiha Gokcen",
+    "monthlyIstanbul": "Monthly Rental in Istanbul",
+    "luxuryBodrum": "Luxury Car Rental in Bodrum",
+    "affordableAntalya": "Affordable Rental in Antalya",
+    "airportIst": "Rental at Istanbul Airport",
+    "from": "from",
+    "perDay": "/day",
+    "cars": "cars",
+    "explore": "Explore",
+    "whyChooseTitle": "Why Choose BiAracım?",
+    "benefit1Title": "Wide Selection",
+    "benefit1Desc": "Thousands of cars from all over Turkey. Find the model you want, wherever you are.",
+    "benefit2Title": "Best Price Guarantee",
+    "benefit2Desc": "Rent directly from car owners and avoid the extra fees charged by rental agencies.",
+    "benefit3Title": "Safe and Easy",
+    "benefit3Desc": "Full insurance coverage and 24/7 roadside assistance. Travel with confidence."
   }
 }

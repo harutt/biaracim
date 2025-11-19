@@ -13,22 +13,17 @@ function Header() {
   const isHomePage = location.pathname === '/'
   const isSearchPage = location.pathname.startsWith('/search')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isLangOpen, setIsLangOpen] = useState(false)
   const [isUserOpen, setIsUserOpen] = useState(false)
+  const [isLocationOpen, setIsLocationOpen] = useState(false)
   const menuRef = useRef(null)
-  const langRef = useRef(null)
   const userRef = useRef(null)
+  const locationRef = useRef(null)
 
   // Get location from URL params on search page
   const searchLocation = searchParams.get('location') || ''
   const displayLocation = searchLocation === 'current'
     ? '📍 Mevcut Konumum'
     : searchLocation || 'Şehir, havaalanı, adres veya otel'
-
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng)
-    setIsLangOpen(false)
-  }
 
   const handleLogout = async () => {
     try {
@@ -47,38 +42,233 @@ function Header() {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsMenuOpen(false)
       }
-      if (langRef.current && !langRef.current.contains(event.target)) {
-        setIsLangOpen(false)
-      }
       if (userRef.current && !userRef.current.contains(event.target)) {
         setIsUserOpen(false)
+      }
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setIsLocationOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const handleLocationSelect = (selectedLocation) => {
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('location', selectedLocation)
+    navigate(`/search?${newParams.toString()}`)
+    setIsLocationOpen(false)
+  }
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className={`mx-auto px-4 md:px-8 py-4 ${isHomePage ? 'max-w-[1280px]' : ''}`}>
         <div className="flex items-center justify-between">
           {/* Left side - Logo and Search */}
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-lg md:text-xl font-bold">
+          <div className="flex items-center gap-2 flex-1">
+            <Link to="/" className="text-lg md:text-xl font-bold whitespace-nowrap">
               BiAracım
             </Link>
-            {!isHomePage && (
+            {isSearchPage ? (
+              // SearchResults page - Turo-style search bar
+              <div className="flex items-center gap-6 flex-1 max-w-5xl ml-4">
+                {/* Where */}
+                <div className="flex-1 min-w-0 relative" ref={locationRef}>
+                  <label className="block text-xs font-semibold mb-1" style={{ color: '#593CFB' }}>Nerede</label>
+                  <button
+                    onClick={() => setIsLocationOpen(!isLocationOpen)}
+                    className="flex items-center gap-2 w-full"
+                  >
+                    <span className="text-gray-900 text-sm font-medium truncate">
+                      {displayLocation === 'Şehir, havaalanı, adres veya otel' ? displayLocation.split(',')[0] : displayLocation}
+                    </span>
+                    <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div className="h-0.5 bg-gray-200 mt-1"></div>
+
+                  {/* Location Dropdown */}
+                  {isLocationOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 max-h-96 overflow-y-auto">
+                      {/* History Section */}
+                      <div className="px-4 py-2">
+                        <div className="text-xs font-semibold text-gray-500 mb-2">History</div>
+                        <button
+                          onClick={() => handleLocationSelect(displayLocation)}
+                          className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                        >
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 truncate">{displayLocation}</div>
+                            <div className="text-xs text-gray-500">Son arama</div>
+                          </div>
+                        </button>
+                      </div>
+
+                      <div className="border-t border-gray-100 my-2"></div>
+
+                      {/* Airports */}
+                      <div className="px-4 py-2">
+                        <div className="text-xs font-semibold text-gray-500 mb-2">Havaalanları</div>
+                        <button
+                          onClick={() => handleLocationSelect('İstanbul Havalimanı')}
+                          className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                        >
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                            </svg>
+                          </div>
+                          <span className="font-medium text-gray-900">IST - İstanbul Havalimanı</span>
+                        </button>
+                        <button
+                          onClick={() => handleLocationSelect('Sabiha Gökçen Havalimanı')}
+                          className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                        >
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                            </svg>
+                          </div>
+                          <span className="font-medium text-gray-900">SAW - Sabiha Gökçen Havalimanı</span>
+                        </button>
+                      </div>
+
+                      <div className="border-t border-gray-100 my-2"></div>
+
+                      {/* Cities */}
+                      <div className="px-4 py-2">
+                        <div className="text-xs font-semibold text-gray-500 mb-2">Şehirler</div>
+                        {['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa'].map((city) => (
+                          <button
+                            key={city}
+                            onClick={() => handleLocationSelect(city)}
+                            className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                          >
+                            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                              </svg>
+                            </div>
+                            <span className="font-medium text-gray-900">{city}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="border-t border-gray-100 my-2"></div>
+
+                      {/* Train Stations */}
+                      <div className="px-4 py-2">
+                        <div className="text-xs font-semibold text-gray-500 mb-2">Tren İstasyonları</div>
+                        <button
+                          onClick={() => handleLocationSelect('Ankara Garı')}
+                          className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                        >
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                          </div>
+                          <span className="font-medium text-gray-900">Ankara Garı</span>
+                        </button>
+                        <button
+                          onClick={() => handleLocationSelect('Haydarpaşa Garı')}
+                          className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                        >
+                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                          </div>
+                          <span className="font-medium text-gray-900">Haydarpaşa Garı, İstanbul</span>
+                        </button>
+                      </div>
+
+                      {/* Powered by Google */}
+                      <div className="px-4 py-2 text-center">
+                        <span className="text-xs text-gray-400">powered by </span>
+                        <span className="text-xs font-semibold">
+                          <span style={{ color: '#4285F4' }}>G</span>
+                          <span style={{ color: '#EA4335' }}>o</span>
+                          <span style={{ color: '#FBBC05' }}>o</span>
+                          <span style={{ color: '#4285F4' }}>g</span>
+                          <span style={{ color: '#34A853' }}>l</span>
+                          <span style={{ color: '#EA4335' }}>e</span>
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* From */}
+                <div className="flex-1 min-w-0">
+                  <label className="block text-xs font-semibold mb-1" style={{ color: '#593CFB' }}>Başlangıç</label>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="flex items-center gap-2 w-full"
+                  >
+                    <span className="text-gray-900 text-sm truncate">
+                      {searchParams.get('startDate')
+                        ? new Date(searchParams.get('startDate')).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })
+                        : 'Tarih ekle'}
+                    </span>
+                    <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div className="h-0.5 bg-gray-200 mt-1"></div>
+                </div>
+
+                {/* Until */}
+                <div className="flex-1 min-w-0">
+                  <label className="block text-xs font-semibold mb-1" style={{ color: '#593CFB' }}>Bitiş</label>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="flex items-center gap-2 w-full"
+                  >
+                    <span className="text-gray-900 text-sm truncate">
+                      {searchParams.get('endDate')
+                        ? new Date(searchParams.get('endDate')).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })
+                        : 'Tarih ekle'}
+                    </span>
+                    <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div className="h-0.5 bg-gray-200 mt-1"></div>
+                </div>
+
+                {/* Age */}
+                <div className="min-w-0">
+                  <label className="block text-xs font-semibold mb-1" style={{ color: '#593CFB' }}>Yaş</label>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="text-gray-900 text-sm">30</span>
+                    <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div className="h-0.5 bg-gray-200 mt-1"></div>
+                </div>
+              </div>
+            ) : !isHomePage && (
+              // Other pages - Show simple search
               <div className="relative hidden md:block">
                 <svg className="w-5 h-5 absolute left-0 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
                   type="text"
-                  value={isSearchPage ? displayLocation : ''}
                   placeholder="Şehir, havaalanı, adres veya otel"
-                  readOnly={isSearchPage}
-                  onClick={() => isSearchPage && navigate('/')}
-                  className={`w-80 pl-7 pr-4 py-2 bg-transparent text-gray-900 placeholder-gray-400 border-b border-gray-300 focus:outline-none focus:border-gray-500 transition-colors ${isSearchPage ? 'cursor-pointer' : ''}`}
+                  onClick={() => navigate('/')}
+                  className="w-80 pl-7 pr-4 py-2 bg-transparent text-gray-900 placeholder-gray-400 border-b border-gray-300 focus:outline-none focus:border-gray-500 transition-colors cursor-pointer"
                 />
               </div>
             )}
@@ -86,14 +276,6 @@ function Header() {
 
           {/* Right side - Controls */}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* List Car Button */}
-            <Link
-              to="/list-car"
-              className="hidden md:inline-block px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              {t('header.list_car')}
-            </Link>
-
             {/* Main Menu Dropdown */}
             <div className="relative" ref={menuRef}>
               <button
@@ -216,49 +398,6 @@ function Header() {
                     </svg>
                     <span className="text-sm font-medium">{t('header.host_tools')}</span>
                   </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Language Selector */}
-            <div className="relative" ref={langRef}>
-              <button
-                onClick={() => setIsLangOpen(!isLangOpen)}
-                className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className={`fi fi-${i18n.language === 'tr' ? 'tr' : 'gb'}`}></span>
-                <span className="text-sm font-medium">{i18n.language.toUpperCase()}</span>
-                <svg className="w-3.5 h-3.5 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {isLangOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                  <button
-                    onClick={() => {
-                      changeLanguage('tr')
-                      setIsLangOpen(false)
-                    }}
-                    className={`w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                      i18n.language === 'tr' ? 'bg-gray-50 font-medium' : ''
-                    }`}
-                  >
-                    <span className="fi fi-tr"></span>
-                    <span>Türkçe</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      changeLanguage('en')
-                      setIsLangOpen(false)
-                    }}
-                    className={`w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                      i18n.language === 'en' ? 'bg-gray-50 font-medium' : ''
-                    }`}
-                  >
-                    <span className="fi fi-gb"></span>
-                    <span>English</span>
-                  </button>
                 </div>
               )}
             </div>

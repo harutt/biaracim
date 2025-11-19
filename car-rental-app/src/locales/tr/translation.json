@@ -278,5 +278,27 @@
     "friday": "Pe",
     "saturday": "Cu",
     "sunday": "Ct"
+  },
+  "categories": {
+    "exploreTitle": "Kategorileri Keşfet",
+    "teslaIstanbul": "İstanbul'da Tesla Kiralama",
+    "suvAnkara": "Ankara'da SUV Kiralama",
+    "newerIzmir": "İzmir'de Yeni Model Kiralama",
+    "airportSaw": "Sabiha Gökçen'de Araç Kiralama",
+    "monthlyIstanbul": "İstanbul'da Aylık Kiralama",
+    "luxuryBodrum": "Bodrum'da Lüks Araç Kiralama",
+    "affordableAntalya": "Antalya'da Uygun Fiyatlı Kiralama",
+    "airportIst": "İstanbul Havalimanı'nda Kiralama",
+    "from": "başlayan fiyatlarla",
+    "perDay": "/gün",
+    "cars": "araç",
+    "explore": "Keşfet",
+    "whyChooseTitle": "Neden BiAracım?",
+    "benefit1Title": "Geniş Araç Seçeneği",
+    "benefit1Desc": "Türkiye'nin her yerinden binlerce araç. İstediğiniz modeli, istediğiniz yerde bulun.",
+    "benefit2Title": "En İyi Fiyat Garantisi",
+    "benefit2Desc": "Direkt araç sahiplerinden kiralayın, aracı kurumlara ödenen ekstra ücretlerden kurtulun.",
+    "benefit3Title": "Güvenli ve Kolay",
+    "benefit3Desc": "Tam sigorta koruması ve 7/24 yol yardımı. Güvenle seyahat edin."
   }
 }

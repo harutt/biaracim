@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { allCars as carsData } from '../data/cars'
 import { formatPrice } from '../utils/formatters'
@@ -6,7 +6,17 @@ import CarCard from './CarCard'
 
 function CarListings({ searchParams }) {
   const { t } = useTranslation()
-  const [visibleCount, setVisibleCount] = useState(8) // Show 8 cars initially (2 rows)
+  const scrollRef = useRef(null)
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 300
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      })
+    }
+  }
 
   // Filter cars based on search params
   const filteredCars = useMemo(() => {
@@ -35,11 +45,6 @@ function CarListings({ searchParams }) {
 
   // Show message if no cars found
   const showNoResults = filteredCars.length === 0
-  const hasMore = visibleCount < filteredCars.length
-
-  const handleLoadMore = () => {
-    setVisibleCount(prev => prev + 6)
-  }
 
   return (
     <div className="container py-8">
@@ -63,12 +68,18 @@ function CarListings({ searchParams }) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">{displayLocation} {t('carListings.title')} →</h2>
         <div className="flex gap-2">
-          <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <button
+            onClick={() => scroll('left')}
+            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <button
+            onClick={() => scroll('right')}
+            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -89,28 +100,19 @@ function CarListings({ searchParams }) {
           </p>
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredCars.slice(0, visibleCount).map((car) => (
-              <CarCard key={car.id} car={{
-                ...car,
-                price: formatPrice(car.price),
-                location: car.location
-              }} />
+        <div ref={scrollRef} className="overflow-x-auto scrollbar-hide -mx-4 px-4">
+          <div className="flex gap-6 pb-4" style={{ width: 'max-content' }}>
+            {filteredCars.map((car) => (
+              <div key={car.id} className="w-[280px] flex-shrink-0">
+                <CarCard car={{
+                  ...car,
+                  price: formatPrice(car.price),
+                  location: car.location
+                }} />
+              </div>
             ))}
           </div>
-
-          {hasMore && (
-            <div className="flex justify-center mt-8">
-              <button
-                onClick={handleLoadMore}
-                className="btn-load-more"
-              >
-                {t('common.loadMore')}
-              </button>
-            </div>
-          )}
-        </>
+        </div>
       )}
     </div>
   )

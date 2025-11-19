@@ -253,33 +253,21 @@ function SearchResults() {
 
   return (
     <>
-      {/* Top Search Bar - Interactive */}
-      <div className="bg-white border-b border-gray-200 sticky top-[73px] z-40">
-        <div className="max-w-[1600px] mx-auto px-8 py-4">
-          <div className="flex items-center gap-4 text-sm">
-            <Link to="/" className="flex items-center gap-2 text-blue-600 hover:text-blue-700">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span>{t('searchResults.backToHome')}</span>
-            </Link>
-
-            {/* Location Search Input */}
-            <div className="relative" ref={locationRef}>
-              <button
-                onClick={() => setShowLocationDropdown(!showLocationDropdown)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                <span className="font-medium text-gray-700">
-                  {location === 'current' ? '📍 Mevcut Konumum' : (location || t('searchResults.anywhere'))}
-                </span>
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+      {/* Search bar is now in Header component */}
+      <div className="bg-white border-b border-gray-200 sticky top-[73px] z-40" style={{ display: 'none' }}>
+        <div className="max-w-[1600px] mx-auto px-8 py-2">
+          <div className="flex items-center gap-0.5">
+            {/* Where */}
+            <div className="flex-1 p-2 relative border-b-2 border-gray-200 hover:border-purple-500 transition-colors" ref={locationRef}>
+              <label className="block text-[9px] text-gray-600 mb-0">{t('hero.where')}</label>
+              <input
+                type="text"
+                placeholder={t('hero.wherePlaceholder')}
+                value={location === 'current' ? '📍 Mevcut Konumum' : location}
+                onFocus={() => setShowLocationDropdown(true)}
+                readOnly
+                className="w-full text-gray-800 placeholder-gray-400 focus:outline-none text-sm cursor-pointer bg-transparent"
+              />
 
               {/* Location Dropdown */}
               {showLocationDropdown && (
@@ -335,17 +323,64 @@ function SearchResults() {
               )}
             </div>
 
-            {startDate && endDate && (
-              <>
-                <span className="text-gray-300">|</span>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span>{new Date(startDate).toLocaleDateString('en-GB')} {startTime} - {new Date(endDate).toLocaleDateString('en-GB')} {endTime}</span>
-                </div>
-              </>
-            )}
+            {/* Divider */}
+            <div className="hidden md:block w-px bg-gray-200"></div>
+
+            {/* From Date */}
+            <div className="flex-1 p-2 border-b-2 border-gray-200 hover:border-purple-500 transition-colors">
+              <label className="block text-[9px] text-gray-600 mb-0">{t('hero.from')}</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={startDate ? new Date(startDate).toLocaleDateString('tr-TR') : ''}
+                  placeholder={t('hero.addDate')}
+                  readOnly
+                  className="flex-1 text-gray-800 placeholder-gray-400 focus:outline-none text-sm cursor-pointer bg-transparent"
+                />
+                <input
+                  type="text"
+                  value={startTime || ''}
+                  placeholder={t('hero.selectTime')}
+                  readOnly
+                  className={`flex-1 text-sm focus:outline-none cursor-pointer bg-transparent ${
+                    startDate ? 'text-gray-800 placeholder-gray-400' : 'text-gray-400 cursor-not-allowed'
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="hidden md:block w-px bg-gray-200"></div>
+
+            {/* Until Date */}
+            <div className="flex-1 p-2 border-b-2 border-gray-200 hover:border-purple-500 transition-colors">
+              <label className="block text-[9px] text-gray-600 mb-0">{t('hero.until')}</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={endDate ? new Date(endDate).toLocaleDateString('tr-TR') : ''}
+                  placeholder={t('hero.addDate')}
+                  readOnly
+                  className="flex-1 text-gray-800 placeholder-gray-400 focus:outline-none text-sm cursor-pointer bg-transparent"
+                />
+                <input
+                  type="text"
+                  value={endTime || ''}
+                  placeholder={t('hero.selectTime')}
+                  readOnly
+                  className={`flex-1 text-sm focus:outline-none cursor-pointer bg-transparent ${
+                    endDate ? 'text-gray-800 placeholder-gray-400' : 'text-gray-400 cursor-not-allowed'
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* Search Button */}
+            <button className="btn-search ml-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

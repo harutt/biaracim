@@ -6,6 +6,7 @@ import AirportCarListings from '../components/AirportCarListings'
 import DeliveredCarListings from '../components/DeliveredCarListings'
 import MonthlyRentals from '../components/MonthlyRentals'
 import NearbyCarListings from '../components/NearbyCarListings'
+import CategorySections from '../components/CategorySections'
 
 function Home() {
   const [activeFilter, setActiveFilter] = useState('all')
@@ -31,7 +32,12 @@ function Home() {
       case 'delivered':
         return <DeliveredCarListings searchParams={searchParams} />
       default:
-        return <CarListings searchParams={searchParams} />
+        return (
+          <>
+            <CategorySections />
+            <CarListings searchParams={searchParams} />
+          </>
+        )
     }
   }
 
