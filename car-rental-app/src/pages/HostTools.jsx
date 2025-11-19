@@ -1,10 +1,12 @@
+import { Link } from 'react-router-dom'
+
 function HostTools() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero */}
       <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white py-16">
         <div className="container text-center">
-          <h1 className="text-4xl font-bold mb-4">Kiralama Yönetimi</h1>
+          <h1 className="text-4xl font-bold mb-4">Ev Sahibi Araçları</h1>
           <p className="text-xl opacity-90">İşinizi yönetmek için ihtiyacınız olan her şey</p>
         </div>
       </div>
@@ -13,70 +15,81 @@ function HostTools() {
         <div className="max-w-6xl mx-auto">
           {/* Tools Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 transition-colors">
+            <Link to="/host-dashboard" className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 hover:shadow-lg transition-all">
+              <div className="text-4xl mb-4">🏠</div>
+              <h3 className="text-xl font-bold mb-3">Dashboard</h3>
+              <p className="text-gray-600 mb-4">
+                Tüm araçlarınızı ve performanslarını görüntüleyin
+              </p>
+              <span className="text-purple-600 font-semibold hover:underline">
+                Dashboard'a Git →
+              </span>
+            </Link>
+
+            <Link to="/host-analytics" className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 hover:shadow-lg transition-all">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-xl font-bold mb-3">Gelir İzleme</h3>
               <p className="text-gray-600 mb-4">
                 Günlük, haftalık ve aylık gelir raporlarınızı görüntüleyin
               </p>
-              <button className="text-purple-600 font-semibold hover:underline">
+              <span className="text-purple-600 font-semibold hover:underline">
                 Raporları Görüntüle →
-              </button>
-            </div>
+              </span>
+            </Link>
 
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 transition-colors">
+            <Link to="/host-reservations" className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 hover:shadow-lg transition-all">
               <div className="text-4xl mb-4">📅</div>
               <h3 className="text-xl font-bold mb-3">Rezervasyon Yönetimi</h3>
               <p className="text-gray-600 mb-4">
                 Tüm rezervasyonlarınızı tek bir yerden yönetin
               </p>
-              <button className="text-purple-600 font-semibold hover:underline">
+              <span className="text-purple-600 font-semibold hover:underline">
                 Rezervasyonları Gör →
-              </button>
-            </div>
+              </span>
+            </Link>
 
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 transition-colors">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 opacity-60 cursor-not-allowed">
               <div className="text-4xl mb-4">💰</div>
               <h3 className="text-xl font-bold mb-3">Fiyat Optimizasyonu</h3>
               <p className="text-gray-600 mb-4">
                 Otomatik fiyatlandırma ile kazancınızı artırın
               </p>
-              <button className="text-purple-600 font-semibold hover:underline">
-                Fiyatları Optimize Et →
-              </button>
+              <span className="text-purple-600 font-semibold">
+                Yakında →
+              </span>
             </div>
 
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 transition-colors">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 opacity-60 cursor-not-allowed">
               <div className="text-4xl mb-4">📱</div>
               <h3 className="text-xl font-bold mb-3">Mobil Uygulama</h3>
               <p className="text-gray-600 mb-4">
                 iOS ve Android uygulamalarıyla her yerden erişim
               </p>
-              <button className="text-purple-600 font-semibold hover:underline">
-                Uygulamayı İndir →
-              </button>
+              <span className="text-purple-600 font-semibold">
+                Yakında →
+              </span>
             </div>
 
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 transition-colors">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 opacity-60 cursor-not-allowed">
               <div className="text-4xl mb-4">🔔</div>
               <h3 className="text-xl font-bold mb-3">Bildirimler</h3>
               <p className="text-gray-600 mb-4">
                 Yeni rezervasyonlar ve mesajlar için anlık bildirimler
               </p>
-              <button className="text-purple-600 font-semibold hover:underline">
-                Ayarları Düzenle →
-              </button>
+              <span className="text-purple-600 font-semibold">
+                Yakında →
+              </span>
             </div>
 
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-purple-500 transition-colors">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 opacity-60 cursor-not-allowed">
               <div className="text-4xl mb-4">⭐</div>
               <h3 className="text-xl font-bold mb-3">İnceleme Yönetimi</h3>
               <p className="text-gray-600 mb-4">
                 Müşteri değerlendirmelerini görüntüleyin ve yanıtlayın
               </p>
-              <button className="text-purple-600 font-semibold hover:underline">
-                İncelemeleri Gör →
-              </button>
+              <span className="text-purple-600 font-semibold">
+                Yakında →
+              </span>
             </div>
           </div>
 

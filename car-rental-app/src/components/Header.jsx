@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { logOut } from '../firebase'
@@ -9,13 +9,21 @@ function Header() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   const isHomePage = location.pathname === '/'
+  const isSearchPage = location.pathname.startsWith('/search')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLangOpen, setIsLangOpen] = useState(false)
   const [isUserOpen, setIsUserOpen] = useState(false)
   const menuRef = useRef(null)
   const langRef = useRef(null)
   const userRef = useRef(null)
+
+  // Get location from URL params on search page
+  const searchLocation = searchParams.get('location') || ''
+  const displayLocation = searchLocation === 'current'
+    ? '📍 Mevcut Konumum'
+    : searchLocation || 'Şehir, havaalanı, adres veya otel'
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng)
@@ -52,33 +60,36 @@ function Header() {
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className={`mx-auto px-8 py-4 ${isHomePage ? 'max-w-[1280px]' : ''}`}>
+      <div className={`mx-auto px-4 md:px-8 py-4 ${isHomePage ? 'max-w-[1280px]' : ''}`}>
         <div className="flex items-center justify-between">
           {/* Left side - Logo and Search */}
           <div className="flex items-center gap-4">
-            <Link to="/" className="text-xl font-bold">
+            <Link to="/" className="text-lg md:text-xl font-bold">
               BiAracım
             </Link>
             {!isHomePage && (
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <svg className="w-5 h-5 absolute left-0 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
                   type="text"
+                  value={isSearchPage ? displayLocation : ''}
                   placeholder="Şehir, havaalanı, adres veya otel"
-                  className="w-80 pl-7 pr-4 py-2 bg-transparent text-gray-900 placeholder-gray-400 border-b border-gray-300 focus:outline-none focus:border-gray-500 transition-colors"
+                  readOnly={isSearchPage}
+                  onClick={() => isSearchPage && navigate('/')}
+                  className={`w-80 pl-7 pr-4 py-2 bg-transparent text-gray-900 placeholder-gray-400 border-b border-gray-300 focus:outline-none focus:border-gray-500 transition-colors ${isSearchPage ? 'cursor-pointer' : ''}`}
                 />
               </div>
             )}
           </div>
 
           {/* Right side - Controls */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {/* List Car Button */}
             <Link
               to="/list-car"
-              className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="hidden md:inline-block px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               {t('header.list_car')}
             </Link>
@@ -95,7 +106,7 @@ function Header() {
               </button>
 
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
+                <div className="absolute right-0 mt-2 w-72 md:w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 max-h-[80vh] overflow-y-auto">
                   {!user && (
                     <>
                       <Link
@@ -213,11 +224,11 @@ function Header() {
             <div className="relative" ref={langRef}>
               <button
                 onClick={() => setIsLangOpen(!isLangOpen)}
-                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <span className={`fi fi-${i18n.language === 'tr' ? 'tr' : 'gb'}`}></span>
                 <span className="text-sm font-medium">{i18n.language.toUpperCase()}</span>
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -264,7 +275,7 @@ function Header() {
               </button>
 
               {isUserOpen && (
-                <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
+                <div className="absolute right-0 mt-2 w-72 md:w-60 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 max-h-[80vh] overflow-y-auto">
                   {user ? (
                     <>
                       <Link

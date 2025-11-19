@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useState, useMemo, useRef, useEffect } from 'react'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import CarCard from '../components/CarCard'
 import MapView from '../components/MapView'
@@ -9,10 +9,16 @@ import { formatPrice } from '../utils/formatters'
 
 function SearchResults() {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const { t } = useTranslation()
   const [viewMode, setViewMode] = useState('map') // grid, list, map - default to map
   const [sortBy, setSortBy] = useState('relevance')
   const [selectedCarId, setSelectedCarId] = useState(null)
+
+  // Search state for header
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false)
+  const [isGettingLocation, setIsGettingLocation] = useState(false)
+  const locationRef = useRef(null)
 
   // Filters state
   const [priceRange, setPriceRange] = useState([0, 2000])
@@ -29,22 +35,136 @@ function SearchResults() {
   const endDate = searchParams.get('endDate') || ''
   const startTime = searchParams.get('startTime') || ''
   const endTime = searchParams.get('endTime') || ''
+  const userLat = searchParams.get('lat')
+  const userLng = searchParams.get('lng')
+  const isNearbySearch = searchParams.get('nearby') === 'true'
 
-  // Format cars data for display (add formatted price and priceNum)
-  const allCars = useMemo(() => {
-    return carsData.map(car => ({
-      ...car,
-      price: formatPrice(car.price),
-      priceNum: car.price
-    }))
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setShowLocationDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // Get user's current location
+  const getUserLocation = async () => {
+    setIsGettingLocation(true)
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        })
+      })
+
+      const { latitude, longitude } = position.coords
+
+      // Update URL with new location parameters
+      const newParams = new URLSearchParams(searchParams)
+      newParams.set('location', 'current')
+      newParams.set('lat', latitude.toString())
+      newParams.set('lng', longitude.toString())
+      newParams.set('nearby', 'true')
+
+      navigate(`/search?${newParams.toString()}`)
+      setShowLocationDropdown(false)
+    } catch (error) {
+      console.error('Error getting location:', error)
+      alert(error.code === 1 ? 'Konum izni reddedildi. Lütfen tarayıcı ayarlarından konum erişimine izin verin.' : 'Konum alınamadı. Lütfen tekrar deneyin.')
+    } finally {
+      setIsGettingLocation(false)
+    }
+  }
+
+  // Handle location selection
+  const handleLocationSelect = (selectedLocation) => {
+    const newParams = new URLSearchParams(searchParams)
+
+    if (selectedLocation === 'current') {
+      getUserLocation()
+      return
+    }
+
+    // Update location parameter
+    newParams.set('location', selectedLocation)
+    newParams.delete('lat')
+    newParams.delete('lng')
+    newParams.delete('nearby')
+
+    navigate(`/search?${newParams.toString()}`)
+    setShowLocationDropdown(false)
+  }
+
+  // Calculate distance between two coordinates (Haversine formula)
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371 // Radius of the Earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180
+    const dLon = (lon2 - lon1) * Math.PI / 180
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    const distance = R * c // Distance in km
+    return distance
+  }
+
+  // Approximate coordinates for Turkish cities (for demo purposes)
+  const cityCoordinates = {
+    'istanbul': { lat: 41.0082, lng: 28.9784 },
+    'sarıyer': { lat: 41.1688, lng: 29.0536 },
+    'beşiktaş': { lat: 41.0422, lng: 29.0089 },
+    'şişli': { lat: 41.0606, lng: 28.9876 },
+    'fatih': { lat: 41.0204, lng: 28.9485 },
+    'taksim': { lat: 41.0369, lng: 28.9850 },
+    'ankara': { lat: 39.9334, lng: 32.8597 },
+    'izmir': { lat: 38.4192, lng: 27.1287 },
+    'antalya': { lat: 36.8969, lng: 30.7133 },
+    'bursa': { lat: 40.1828, lng: 29.0665 },
+    'adana': { lat: 37.0000, lng: 35.3213 }
+  }
+
+  // Format cars data for display (add formatted price, priceNum, and distance if user location available)
+  const allCars = useMemo(() => {
+    return carsData.map(car => {
+      let distance = null
+
+      // Calculate distance if user location is available and car has a city
+      if (userLat && userLng && car.city) {
+        const cityKey = car.city.toLowerCase().trim()
+        const carCoords = cityCoordinates[cityKey]
+
+        if (carCoords) {
+          distance = calculateDistance(
+            parseFloat(userLat),
+            parseFloat(userLng),
+            carCoords.lat,
+            carCoords.lng
+          )
+        }
+      }
+
+      return {
+        ...car,
+        price: formatPrice(car.price),
+        priceNum: car.price,
+        distance: distance // Distance in km, or null if not calculable
+      }
+    })
+  }, [userLat, userLng])
 
   // Filter and sort cars
   const processedCars = useMemo(() => {
     let filtered = [...allCars]
 
     // Filter by location
-    if (location && location !== 'anywhere') {
+    if (location && location !== 'anywhere' && location !== 'current') {
       const searchLocation = location.toLowerCase().trim()
       filtered = filtered.filter(car => {
         const carLocation = car.location.toLowerCase()
@@ -53,6 +173,12 @@ function SearchResults() {
                carCity.includes(searchLocation) ||
                searchLocation.includes(carCity)
       })
+    }
+
+    // If nearby search, filter by distance (within 50km) and sort by distance
+    if (isNearbySearch && userLat && userLng) {
+      // Filter cars that have distance calculated and are within 50km
+      filtered = filtered.filter(car => car.distance !== null && car.distance <= 50)
     }
 
     // Filter by price range
@@ -91,28 +217,43 @@ function SearchResults() {
     }
 
     // Sort
-    switch (sortBy) {
-      case 'price-low':
-        filtered.sort((a, b) => a.priceNum - b.priceNum)
-        break
-      case 'price-high':
-        filtered.sort((a, b) => b.priceNum - a.priceNum)
-        break
-      case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating)
-        break
-      case 'relevance':
-      default:
-        // Keep default order or implement relevance logic
-        break
+    if (isNearbySearch && userLat && userLng) {
+      // If nearby search, always sort by distance first
+      filtered.sort((a, b) => (a.distance || 999) - (b.distance || 999))
+    } else {
+      // Normal sorting
+      switch (sortBy) {
+        case 'price-low':
+          filtered.sort((a, b) => a.priceNum - b.priceNum)
+          break
+        case 'price-high':
+          filtered.sort((a, b) => b.priceNum - a.priceNum)
+          break
+        case 'rating':
+          filtered.sort((a, b) => b.rating - a.rating)
+          break
+        case 'relevance':
+        default:
+          // Keep default order or implement relevance logic
+          break
+      }
     }
 
     return filtered
-  }, [allCars, location, priceRange, vehicleType, makeModel, yearRange, seats, electricOnly, sortBy])
+  }, [allCars, location, priceRange, vehicleType, makeModel, yearRange, seats, electricOnly, sortBy, isNearbySearch, userLat, userLng])
+
+  // Popular cities
+  const popularCities = [
+    { name: 'İstanbul', icon: '🏙️' },
+    { name: 'Ankara', icon: '🏛️' },
+    { name: 'İzmir', icon: '🌊' },
+    { name: 'Antalya', icon: '🏖️' },
+    { name: 'Bursa', icon: '🏔️' }
+  ]
 
   return (
     <>
-      {/* Top Search Bar - Simplified */}
+      {/* Top Search Bar - Interactive */}
       <div className="bg-white border-b border-gray-200 sticky top-[73px] z-40">
         <div className="max-w-[1600px] mx-auto px-8 py-4">
           <div className="flex items-center gap-4 text-sm">
@@ -122,12 +263,78 @@ function SearchResults() {
               </svg>
               <span>{t('searchResults.backToHome')}</span>
             </Link>
-            <div className="flex items-center gap-2 text-gray-600">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-              </svg>
-              <span className="font-medium">{location || t('searchResults.anywhere')}</span>
+
+            {/* Location Search Input */}
+            <div className="relative" ref={locationRef}>
+              <button
+                onClick={() => setShowLocationDropdown(!showLocationDropdown)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium text-gray-700">
+                  {location === 'current' ? '📍 Mevcut Konumum' : (location || t('searchResults.anywhere'))}
+                </span>
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Location Dropdown */}
+              {showLocationDropdown && (
+                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+                  {/* Current Location Option */}
+                  <button
+                    onClick={() => handleLocationSelect('current')}
+                    disabled={isGettingLocation}
+                    className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3 disabled:opacity-50"
+                  >
+                    {isGettingLocation ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-gray-600">Konum alınıyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-xl">
+                          📍
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">Mevcut Konumum</div>
+                          <div className="text-xs text-gray-500">Yakınımdaki arabaları göster</div>
+                        </div>
+                      </>
+                    )}
+                  </button>
+
+                  <div className="border-t border-gray-100 my-2"></div>
+
+                  {/* Popular Cities */}
+                  <div className="px-4 py-2">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      Popüler Şehirler
+                    </div>
+                    <div className="space-y-1">
+                      {popularCities.map(city => (
+                        <button
+                          key={city.name}
+                          onClick={() => handleLocationSelect(city.name)}
+                          className="w-full px-3 py-2 text-left hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-3"
+                        >
+                          <span className="text-xl">{city.icon}</span>
+                          <span className="font-medium text-gray-700">{city.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
+
             {startDate && endDate && (
               <>
                 <span className="text-gray-300">|</span>
@@ -261,6 +468,11 @@ function SearchResults() {
                                 <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                               </svg>
                               <span>{car.location}</span>
+                              {car.distance !== null && isNearbySearch && (
+                                <span className="text-purple-600 font-medium">
+                                  • {car.distance.toFixed(1)} km
+                                </span>
+                              )}
                             </div>
                           </div>
                           <div className="text-right">
@@ -293,6 +505,8 @@ function SearchResults() {
                     cars={processedCars}
                     selectedCarId={selectedCarId}
                     onCarSelect={setSelectedCarId}
+                    userLat={userLat}
+                    userLng={userLng}
                   />
                 </div>
               </div>

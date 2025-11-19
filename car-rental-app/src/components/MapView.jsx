@@ -18,7 +18,7 @@ const cityCoordinates = {
   'antalya': [36.8969, 30.7133],
 }
 
-// Custom marker icon
+// Custom marker icon for cars
 const createCustomIcon = (price) => {
   return new Icon({
     iconUrl: `data:image/svg+xml;base64,${btoa(`
@@ -33,9 +33,30 @@ const createCustomIcon = (price) => {
   })
 }
 
-function MapView({ cars, selectedCarId, onCarSelect }) {
-  // Calculate center based on cars
+// Custom marker icon for user location
+const createUserLocationIcon = () => {
+  return new Icon({
+    iconUrl: `data:image/svg+xml;base64,${btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+        <circle cx="24" cy="24" r="22" fill="#9333ea" stroke="white" stroke-width="3" opacity="0.3"/>
+        <circle cx="24" cy="24" r="10" fill="#9333ea" stroke="white" stroke-width="3"/>
+        <circle cx="24" cy="24" r="4" fill="white"/>
+      </svg>
+    `)}`,
+    iconSize: [48, 48],
+    iconAnchor: [24, 24],
+    popupAnchor: [0, -24]
+  })
+}
+
+function MapView({ cars, selectedCarId, onCarSelect, userLat, userLng }) {
+  // Calculate center based on user location or cars
   const getMapCenter = () => {
+    // If user location is available, center on it
+    if (userLat && userLng) {
+      return [parseFloat(userLat), parseFloat(userLng)]
+    }
+
     if (cars.length === 0) return [39.9334, 32.8597] // Default to Ankara
 
     // Get first car's city coordinates
@@ -79,6 +100,7 @@ function MapView({ cars, selectedCarId, onCarSelect }) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
+      {/* Car markers */}
       {cars.map((car, index) => {
         const position = getCarPosition(car, index)
         const priceText = car.price.replace('₺', '')
@@ -125,6 +147,21 @@ function MapView({ cars, selectedCarId, onCarSelect }) {
           </Marker>
         )
       })}
+
+      {/* User location marker */}
+      {userLat && userLng && (
+        <Marker
+          position={[parseFloat(userLat), parseFloat(userLng)]}
+          icon={createUserLocationIcon()}
+        >
+          <Popup>
+            <div className="text-center">
+              <div className="font-semibold text-purple-600 mb-1">📍 Konumunuz</div>
+              <div className="text-xs text-gray-600">Mevcut konumunuz</div>
+            </div>
+          </Popup>
+        </Marker>
+      )}
     </MapContainer>
   )
 }

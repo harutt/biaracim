@@ -18,11 +18,21 @@ import ListCar from './pages/ListCar'
 import AirportDetail from './pages/AirportDetail'
 import CarDetail from './pages/CarDetail'
 import SearchResults from './pages/SearchResults'
+import Profile from './pages/Profile'
+import Checkout from './pages/Checkout'
+import BookingSuccess from './pages/BookingSuccess'
+import Trips from './pages/Trips'
+import Inbox from './pages/Inbox'
+import Account from './pages/Account'
+import TripDetail from './pages/TripDetail'
 
 function AppContent() {
   const location = useLocation()
   const isCarDetailPage = location.pathname.startsWith('/car/')
   const isSearchResultsPage = location.pathname.startsWith('/search')
+  const isCheckoutPage = location.pathname.startsWith('/checkout')
+  const isBookingSuccessPage = location.pathname.startsWith('/booking-success')
+  const isInboxPage = location.pathname.startsWith('/inbox')
 
   if (isCarDetailPage) {
     // Car detail page with its own layout
@@ -55,6 +65,46 @@ function AppContent() {
     )
   }
 
+  if (isCheckoutPage) {
+    // Checkout page with full width layout
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <main className="flex-1">
+          <Routes>
+            <Route path="/checkout/:id" element={<Checkout />} />
+          </Routes>
+        </main>
+      </div>
+    )
+  }
+
+  if (isBookingSuccessPage) {
+    // Booking success page with full width layout
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <main className="flex-1">
+          <Routes>
+            <Route path="/booking-success" element={<BookingSuccess />} />
+          </Routes>
+        </main>
+      </div>
+    )
+  }
+
+  if (isInboxPage) {
+    // Inbox page with full width layout
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Header />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/inbox" element={<Inbox />} />
+          </Routes>
+        </main>
+      </div>
+    )
+  }
+
   // Other pages with standard layout
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -73,6 +123,10 @@ function AppContent() {
             <Route path="/host-tools" element={<HostTools />} />
             <Route path="/calculator" element={<Calculator />} />
             <Route path="/list-car" element={<ListCar />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/trips" element={<Trips />} />
+            <Route path="/trip/:id" element={<TripDetail />} />
+            <Route path="/account" element={<Account />} />
             <Route path="/airport/:airportId" element={<AirportDetail />} />
           </Routes>
         </main>

@@ -10,7 +10,9 @@ function Hero({ onSearch }) {
     startDate: '',
     startTime: '10:00',
     endDate: '',
-    endTime: '10:00'
+    endTime: '10:00',
+    userLat: null,
+    userLng: null
   })
 
   const [showLocationDropdown, setShowLocationDropdown] = useState(false)
@@ -19,6 +21,7 @@ function Hero({ onSearch }) {
   const [activeInput, setActiveInput] = useState(null) // 'from' or 'until'
   const [activeTimeInput, setActiveTimeInput] = useState(null) // 'start' or 'end'
   const [calendarView, setCalendarView] = useState('dates')
+  const [isGettingLocation, setIsGettingLocation] = useState(false)
 
   const locationRef = useRef(null)
   const datePickerRef = useRef(null)
@@ -51,6 +54,13 @@ function Hero({ onSearch }) {
     if (searchData.startTime) params.append('startTime', searchData.startTime)
     if (searchData.endTime) params.append('endTime', searchData.endTime)
 
+    // Add user coordinates if searching by current location
+    if (searchData.location === 'current' && searchData.userLat && searchData.userLng) {
+      params.append('lat', searchData.userLat)
+      params.append('lng', searchData.userLng)
+      params.append('nearby', 'true')
+    }
+
     // Navigate to search results page
     navigate(`/search?${params.toString()}`)
 
@@ -60,9 +70,57 @@ function Hero({ onSearch }) {
     }
   }
 
-  const handleLocationSelect = (location) => {
-    setSearchData(prev => ({ ...prev, location }))
-    setShowLocationDropdown(false)
+  const getUserLocation = async () => {
+    setIsGettingLocation(true)
+
+    try {
+      if (!navigator.geolocation) {
+        alert('Tarayıcınız konum hizmetlerini desteklemiyor')
+        setIsGettingLocation(false)
+        return false
+      }
+
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        })
+      })
+
+      const { latitude, longitude } = position.coords
+      setSearchData(prev => ({
+        ...prev,
+        location: 'current',
+        userLat: latitude,
+        userLng: longitude
+      }))
+
+      setIsGettingLocation(false)
+      setShowLocationDropdown(false)
+      return true
+    } catch (error) {
+      setIsGettingLocation(false)
+      console.error('Konum alınamadı:', error)
+
+      if (error.code === 1) {
+        alert('Konum izni reddedildi. Lütfen tarayıcı ayarlarından konum iznini aktif edin.')
+      } else if (error.code === 2) {
+        alert('Konum bilgisi alınamadı. Lütfen tekrar deneyin.')
+      } else if (error.code === 3) {
+        alert('Konum alınırken zaman aşımı oluştu. Lütfen tekrar deneyin.')
+      }
+      return false
+    }
+  }
+
+  const handleLocationSelect = async (location) => {
+    if (location === 'current') {
+      await getUserLocation()
+    } else {
+      setSearchData(prev => ({ ...prev, location, userLat: null, userLng: null }))
+      setShowLocationDropdown(false)
+    }
   }
 
   const handleTimeSelect = (time) => {
@@ -151,8 +209,8 @@ function Hero({ onSearch }) {
               <input
                 type="text"
                 placeholder={t('hero.wherePlaceholder')}
-                value={searchData.location}
-                onChange={(e) => setSearchData(prev => ({ ...prev, location: e.target.value }))}
+                value={searchData.location === 'current' ? '📍 Mevcut Konumum' : searchData.location}
+                onChange={(e) => setSearchData(prev => ({ ...prev, location: e.target.value, userLat: null, userLng: null }))}
                 onFocus={() => setShowLocationDropdown(true)}
                 className="w-full text-gray-800 placeholder-gray-400 focus:outline-none text-sm"
               />
@@ -164,10 +222,23 @@ function Hero({ onSearch }) {
                     {/* Current Location */}
                     <button
                       onClick={() => handleLocationSelect('current')}
-                      className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left"
+                      disabled={isGettingLocation}
+                      className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-left disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <LocationIcon type={locations.current.iconType} className="w-5 h-5 text-gray-700" />
-                      <span className="text-gray-800 font-medium">{locations.current.label}</span>
+                      {isGettingLocation ? (
+                        <>
+                          <svg className="animate-spin h-5 w-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span className="text-gray-800 font-medium">Konum alınıyor...</span>
+                        </>
+                      ) : (
+                        <>
+                          <LocationIcon type={locations.current.iconType} className="w-5 h-5 text-gray-700" />
+                          <span className="text-gray-800 font-medium">{locations.current.label}</span>
+                        </>
+                      )}
                     </button>
 
                     {/* Anywhere */}

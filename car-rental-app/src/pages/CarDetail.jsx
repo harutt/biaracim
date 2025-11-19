@@ -659,7 +659,20 @@ function CarDetail() {
                 </div>
               </div>
 
-              <button className="w-full py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors mb-6">
+              <button
+                onClick={() => navigate(`/checkout/${id}`, {
+                  state: {
+                    car,
+                    tripStart,
+                    tripEnd,
+                    startTime,
+                    endTime,
+                    pickupLocation,
+                    deliveryLocation
+                  }
+                })}
+                className="w-full py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors mb-6"
+              >
                 Devam Et
               </button>
 
@@ -897,7 +910,20 @@ function CarDetail() {
                 </div>
               </div>
 
-              <button className="w-full py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors mb-6">
+              <button
+                onClick={() => navigate(`/checkout/${id}`, {
+                  state: {
+                    car,
+                    tripStart,
+                    tripEnd,
+                    startTime,
+                    endTime,
+                    pickupLocation,
+                    deliveryLocation
+                  }
+                })}
+                className="w-full py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors mb-6"
+              >
                 Devam Et
               </button>
 

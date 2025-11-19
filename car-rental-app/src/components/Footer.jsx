@@ -197,7 +197,7 @@ function Footer() {
         {/* Browse Categories Section with Tabs */}
         <div className="mb-12 pb-12 border-b border-gray-200">
           {/* Tab Headers */}
-          <div className="flex flex-wrap gap-6 mb-8 border-b border-gray-300">
+          <div className="flex flex-wrap justify-center md:justify-start gap-3 md:gap-6 mb-8 border-b border-gray-300">
             <button
               onClick={() => { setActiveTab('vehicle-types'); setShowMore(false); }}
               className={`pb-3 px-1 text-sm font-semibold transition-colors relative ${
@@ -261,7 +261,7 @@ function Footer() {
           </div>
 
           {/* Tab Content */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-3 text-center md:text-left">
             {displayedItems.map((item, index) => (
               <Link
                 key={index}
@@ -275,17 +275,19 @@ function Footer() {
 
           {/* Show More/Less Button */}
           {currentCategory.items.length > 8 && (
-            <button
-              onClick={() => setShowMore(!showMore)}
-              className="mt-6 text-purple-600 font-semibold text-sm hover:underline"
-            >
-              {showMore ? 'Daha az göster' : 'Daha fazla göster'}
-            </button>
+            <div className="text-center md:text-left">
+              <button
+                onClick={() => setShowMore(!showMore)}
+                className="mt-6 text-purple-600 font-semibold text-sm hover:underline"
+              >
+                {showMore ? 'Daha az göster' : 'Daha fazla göster'}
+              </button>
+            </div>
           )}
         </div>
 
         {/* Main Footer Content */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 text-center md:text-left">
           {/* Column 1 - BiAracım */}
           <div>
             <h4 className="font-bold text-gray-900 mb-4">BiAracım</h4>
