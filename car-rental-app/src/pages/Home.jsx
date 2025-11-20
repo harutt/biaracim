@@ -8,6 +8,7 @@ import MonthlyRentals from '../components/MonthlyRentals'
 import NearbyCarListings from '../components/NearbyCarListings'
 import CategorySections from '../components/CategorySections'
 import RecentSearches from '../components/RecentSearches'
+import CitiesSection from '../components/CitiesSection'
 
 function Home() {
   const [activeFilter, setActiveFilter] = useState('all')
@@ -32,6 +33,8 @@ function Home() {
         return <NearbyCarListings searchParams={searchParams} />
       case 'delivered':
         return <DeliveredCarListings searchParams={searchParams} />
+      case 'cities':
+        return <CitiesSection />
       default:
         return (
           <>

@@ -5,12 +5,12 @@ import { allCars } from '../data/cars'
 import CarCard from './CarCard'
 import { formatPrice } from '../utils/formatters'
 
-function CategorySections() {
+function CitiesSection() {
   const { t } = useTranslation()
   const scrollRefs = useRef({})
 
-  const scroll = (categoryId, direction) => {
-    const container = scrollRefs.current[categoryId]
+  const scroll = (cityId, direction) => {
+    const container = scrollRefs.current[cityId]
     if (container) {
       const scrollAmount = 300
       container.scrollBy({
@@ -20,65 +20,21 @@ function CategorySections() {
     }
   }
 
-  // Define categories with Turkish locations
-  const categories = [
-    {
-      id: 'tesla-istanbul',
-      title: t('categories.teslaIstanbul'),
-      location: 'Istanbul',
-      type: 'Tesla'
-    },
-    {
-      id: 'suv-ankara',
-      title: t('categories.suvAnkara'),
-      location: 'Ankara',
-      type: 'SUV'
-    },
-    {
-      id: 'newer-izmir',
-      title: t('categories.newerIzmir'),
-      location: 'Izmir',
-      year: 2023
-    },
-    {
-      id: 'luxury-bodrum',
-      title: t('categories.luxuryBodrum'),
-      location: 'Bodrum',
-      type: 'Luxury'
-    },
-    {
-      id: 'affordable-antalya',
-      title: t('categories.affordableAntalya'),
-      location: 'Antalya',
-      priceRange: 'affordable'
-    }
+  // Major Turkish cities
+  const cities = [
+    { id: 'istanbul', name: 'İstanbul' },
+    { id: 'ankara', name: 'Ankara' },
+    { id: 'izmir', name: 'İzmir' },
+    { id: 'antalya', name: 'Antalya' },
+    { id: 'bursa', name: 'Bursa' },
   ]
 
-  // Get filtered cars for each category
-  const getCategoryCars = (category) => {
-    let filtered = allCars
-
-    if (category.location) {
-      filtered = filtered.filter(car =>
-        car.location.toLowerCase().includes(category.location.toLowerCase()) ||
-        car.city.toLowerCase().includes(category.location.toLowerCase())
-      )
-    }
-
-    if (category.type) {
-      filtered = filtered.filter(car =>
-        car.type.toLowerCase().includes(category.type.toLowerCase()) ||
-        car.make.toLowerCase().includes(category.type.toLowerCase())
-      )
-    }
-
-    if (category.year) {
-      filtered = filtered.filter(car => car.year >= category.year)
-    }
-
-    if (category.priceRange === 'affordable') {
-      filtered = filtered.filter(car => car.price <= 800)
-    }
+  // Get cars for each city
+  const getCityCars = (cityName) => {
+    let filtered = allCars.filter(car =>
+      car.location.toLowerCase().includes(cityName.toLowerCase()) ||
+      car.city.toLowerCase().includes(cityName.toLowerCase())
+    )
 
     // If we have less than 5 cars, pad with other cars to fill the row
     if (filtered.length < 5) {
@@ -93,23 +49,23 @@ function CategorySections() {
 
   return (
     <div className="container max-w-5xl mx-auto px-4 py-8 space-y-12">
-      {categories.map((category) => {
-        const cars = getCategoryCars(category)
+      {cities.map((city) => {
+        const cars = getCityCars(city.name)
 
         if (cars.length === 0) return null
 
         return (
-          <div key={category.id}>
+          <div key={city.id}>
             <div className="flex items-center justify-between mb-6">
               <Link
-                to={`/search?location=${encodeURIComponent(category.location)}`}
+                to={`/search?location=${encodeURIComponent(city.name)}`}
                 className="text-2xl font-bold hover:underline"
               >
-                {category.title} →
+                {city.name} araç kiralama →
               </Link>
               <div className="flex gap-2">
                 <button
-                  onClick={() => scroll(category.id, 'left')}
+                  onClick={() => scroll(city.id, 'left')}
                   className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +73,7 @@ function CategorySections() {
                   </svg>
                 </button>
                 <button
-                  onClick={() => scroll(category.id, 'right')}
+                  onClick={() => scroll(city.id, 'right')}
                   className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,7 +84,7 @@ function CategorySections() {
             </div>
 
             <div
-              ref={(el) => scrollRefs.current[category.id] = el}
+              ref={(el) => scrollRefs.current[city.id] = el}
               className="overflow-x-auto scrollbar-hide"
             >
               <div className="flex gap-4 pb-4">
@@ -150,4 +106,4 @@ function CategorySections() {
   )
 }
 
-export default CategorySections
+export default CitiesSection

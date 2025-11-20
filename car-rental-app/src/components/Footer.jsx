@@ -99,17 +99,17 @@ function Footer() {
       title: 'ARAÇ TİPLERİ',
       items: [
         { name: 'Araç kiralama', path: '/car-rental' },
-        { name: 'Minivan kiralama', path: '/minivan-rental' },
-        { name: 'Ticari araç kiralama', path: '/cargo-van-rental' },
-        { name: 'Cabrio kiralama', path: '/convertible-rental' },
+        { name: 'Ekonomik araç kiralama', path: '/economy-rental' },
+        { name: 'Orta sınıf araç kiralama', path: '/midsize-rental' },
         { name: 'Lüks araç kiralama', path: '/luxury-rental' },
         { name: 'SUV kiralama', path: '/suv-rental' },
-        { name: 'Elektrikli araç', path: '/electric-rental' },
-        { name: 'Klasik araç', path: '/classic-rental' },
-        { name: 'Spor araç', path: '/sport-rental' },
-        { name: 'Van kiralama', path: '/van-rental' },
+        { name: 'Sedan kiralama', path: '/sedan-rental' },
+        { name: 'Hatchback kiralama', path: '/hatchback-rental' },
+        { name: 'Station wagon kiralama', path: '/wagon-rental' },
+        { name: 'Minivan kiralama', path: '/minivan-rental' },
+        { name: 'Ticari araç kiralama', path: '/cargo-van-rental' },
         { name: 'Kamyonet kiralama', path: '/truck-rental' },
-        { name: 'Düğün araçları', path: '/wedding-rental' }
+        { name: 'Elektrikli araç kiralama', path: '/electric-rental' }
       ]
     },
     'makes-models': {
@@ -161,19 +161,6 @@ function Footer() {
         { name: 'Adana Havalimanı (ADA)', path: '/ada-airport' }
       ]
     },
-    'international': {
-      title: 'ULUSLARARASI ŞEHİRLER',
-      items: [
-        { name: 'Lefkoşa kiralama', path: '/nicosia' },
-        { name: 'Girne kiralama', path: '/kyrenia' },
-        { name: 'Gazimağusa kiralama', path: '/famagusta' },
-        { name: 'Bakü kiralama', path: '/baku' },
-        { name: 'Tiflis kiralama', path: '/tbilisi' },
-        { name: 'Atina kiralama', path: '/athens' },
-        { name: 'Sofya kiralama', path: '/sofia' },
-        { name: 'Belgrad kiralama', path: '/belgrade' }
-      ]
-    },
     'regions': {
       title: 'BÖLGELER',
       items: [
@@ -189,7 +176,7 @@ function Footer() {
   }
 
   const currentCategory = footerCategories[activeTab]
-  const displayedItems = showMore ? currentCategory.items : currentCategory.items.slice(0, 8)
+  const displayedItems = showMore ? currentCategory.items : currentCategory.items.slice(0, 10)
 
   return (
     <footer className="bg-gray-50 border-t border-gray-200">
@@ -239,16 +226,6 @@ function Footer() {
               HAVALİMANLARI
             </button>
             <button
-              onClick={() => { setActiveTab('international'); setShowMore(false); }}
-              className={`pb-3 px-1 text-sm font-semibold transition-colors relative ${
-                activeTab === 'international'
-                  ? 'text-gray-900 border-b-2 border-gray-900'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              ULUSLARARASI ŞEHİRLER
-            </button>
-            <button
               onClick={() => { setActiveTab('regions'); setShowMore(false); }}
               className={`pb-3 px-1 text-sm font-semibold transition-colors relative ${
                 activeTab === 'regions'
@@ -274,7 +251,7 @@ function Footer() {
           </div>
 
           {/* Show More/Less Button */}
-          {currentCategory.items.length > 8 && (
+          {currentCategory.items.length > 10 && (
             <div className="text-center md:text-left">
               <button
                 onClick={() => setShowMore(!showMore)}

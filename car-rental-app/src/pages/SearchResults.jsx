@@ -38,6 +38,30 @@ function SearchResults() {
   const userLat = searchParams.get('lat')
   const userLng = searchParams.get('lng')
   const isNearbySearch = searchParams.get('nearby') === 'true'
+  const vehicleTypeParam = searchParams.get('vehicleType')
+
+  // Set vehicle type from URL parameter
+  useEffect(() => {
+    if (vehicleTypeParam) {
+      // Convert URL param to filter value
+      const typeMap = {
+        'car-rental': 'all',
+        'economy-rental': 'all', // Filter by price in component
+        'midsize-rental': 'all', // Filter by price in component
+        'luxury-rental': 'luxury',
+        'suv-rental': 'suv',
+        'sedan-rental': 'sedan',
+        'hatchback-rental': 'hatchback',
+        'wagon-rental': 'wagon',
+        'minivan-rental': 'minivan',
+        'cargo-van-rental': 'cargo',
+        'truck-rental': 'truck',
+        'electric-rental': 'electric',
+      }
+      const filterType = typeMap[vehicleTypeParam] || vehicleTypeParam
+      setVehicleType(filterType)
+    }
+  }, [vehicleTypeParam])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -460,10 +484,10 @@ function SearchResults() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  No cars found
+                  Araç bulunamadı
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Try adjusting your filters or search criteria
+                  Filtrelerinizi ayarlamayı, tarihlerinizi değiştirmeyi veya haritayı keşfetmeyi deneyin
                 </p>
                 <button
                   onClick={() => {
@@ -475,7 +499,7 @@ function SearchResults() {
                   }}
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Clear all filters
+                  Tüm filtreleri temizle
                 </button>
               </div>
             ) : viewMode === 'map' ? (

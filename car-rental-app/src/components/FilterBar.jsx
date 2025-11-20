@@ -142,7 +142,19 @@ function FilterBar({
           {/* Vehicle Type */}
           <FilterButton
             name="vehicleType"
-            label={t('searchResults.vehicleType')}
+            label={
+              vehicleType === 'all' ? t('searchResults.vehicleType') :
+              vehicleType === 'suv' ? 'SUV\'lar' :
+              vehicleType === 'sedan' ? 'Sedanlar' :
+              vehicleType === 'hatchback' ? 'Hatchbackler' :
+              vehicleType === 'minivan' ? 'Minivanlar' :
+              vehicleType === 'truck' ? 'Kamyonetler' :
+              vehicleType === 'luxury' ? 'Lüks araçlar' :
+              vehicleType === 'electric' ? 'Elektrikli araçlar' :
+              vehicleType === 'wagon' ? 'Station wagonlar' :
+              vehicleType === 'cargo' ? 'Ticari araçlar' :
+              t('searchResults.vehicleType')
+            }
             hasValue={vehicleType !== 'all'}
           >
             <div className="p-6 w-[600px]">

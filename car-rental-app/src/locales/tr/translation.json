@@ -104,7 +104,11 @@
     "istanbul": "İstanbul",
     "ankara": "Ankara",
     "izmir": "İzmir",
-    "antalya": "Antalya"
+    "antalya": "Antalya",
+    "bursa": "Bursa",
+    "adana": "Adana",
+    "gaziantep": "Gaziantep",
+    "konya": "Konya"
   },
   "airports": {
     "istanbul": "İstanbul Havalimanı (IST)",

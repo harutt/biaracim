@@ -25,6 +25,7 @@ import Trips from './pages/Trips'
 import Inbox from './pages/Inbox'
 import Account from './pages/Account'
 import TripDetail from './pages/TripDetail'
+import VehicleTypePage from './pages/VehicleTypePage'
 
 function AppContent() {
   const location = useLocation()
@@ -128,6 +129,7 @@ function AppContent() {
             <Route path="/trip/:id" element={<TripDetail />} />
             <Route path="/account" element={<Account />} />
             <Route path="/airport/:airportId" element={<AirportDetail />} />
+            <Route path="/:type" element={<VehicleTypePage />} />
           </Routes>
         </main>
         <Footer />
