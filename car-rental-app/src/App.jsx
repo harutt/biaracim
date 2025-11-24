@@ -26,6 +26,10 @@ import Inbox from './pages/Inbox'
 import Account from './pages/Account'
 import TripDetail from './pages/TripDetail'
 import VehicleTypePage from './pages/VehicleTypePage'
+import LuxuryRental from './pages/LuxuryRental'
+import SedanRental from './pages/SedanRental'
+import EconomyRental from './pages/EconomyRental'
+import HatchbackRental from './pages/HatchbackRental'
 
 function AppContent() {
   const location = useLocation()
@@ -129,6 +133,10 @@ function AppContent() {
             <Route path="/trip/:id" element={<TripDetail />} />
             <Route path="/account" element={<Account />} />
             <Route path="/airport/:airportId" element={<AirportDetail />} />
+            <Route path="/luxury-rental" element={<LuxuryRental />} />
+            <Route path="/sedan-rental" element={<SedanRental />} />
+            <Route path="/economy-rental" element={<EconomyRental />} />
+            <Route path="/hatchback-rental" element={<HatchbackRental />} />
             <Route path="/:type" element={<VehicleTypePage />} />
           </Routes>
         </main>
